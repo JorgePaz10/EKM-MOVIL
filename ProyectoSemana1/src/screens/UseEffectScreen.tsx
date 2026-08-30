@@ -12,7 +12,7 @@ export default function UseEffectScreen() {
 
   /*
     1- Tipo: useEffect sin arreglo de dependencias
-    2- Definicion: Este efecto se ejecuta después de cada renderizado del componente, si dentro del efecto se actualiza un estado,
+    2- Definicion: Este efecto se ejecuta despues de cada renderizado del componente, si dentro del efecto se actualiza un estado,
        ese cambio puede provocar un nuevo render y el efecto puede ejecutarse nuevamente.
     3- Cuando usarlo: Se recomienda cuando necesitas ejecutar logica o sincronizaciones secundarias de forma constante tras cualquier cambio visual o 
        actualizacion de datos en la pantalla.
@@ -26,7 +26,7 @@ export default function UseEffectScreen() {
 
    /*
     1- Tipo: useEffect con arreglo de dependencias [contador]
-    2- Definicion: Este efecto se ejecuta después del primer renderizado y nuevamente cada vez que cambia el valor de la variable incluida en el arreglo de dependencias,
+    2- Definicion: Este efecto se ejecuta despues del primer renderizado y nuevamente cada vez que cambia el valor de la variable incluida en el arreglo de dependencias,
        en este caso, "contador".
     3- Cuando usarlo: Se recomienda para reaccionar de manera especifica a cambios de variables concretas, como hacer llamadas a una API cuando un ID cambia,
        o registrar estadisticas ante eventos de usuario.
