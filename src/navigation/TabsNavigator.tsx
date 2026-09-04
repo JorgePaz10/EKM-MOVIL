@@ -6,12 +6,14 @@ import Dashboard from "../screens/Dashboard";
 import Clients from "../screens/Clients";
 import Alerts from "../screens/Alerts";
 import Profile from "../screens/features/Profile";
+import Settings from "../screens/features/Settings";
 
 export type TabsParamList = {
   Dashboard: undefined;
   Clients: undefined;
   Alerts: undefined;
   Profile: undefined;
+  Settings: undefined;
 };
 
 const Tab = createBottomTabNavigator<TabsParamList>();
@@ -35,9 +37,17 @@ export default function TabsNavigator() {
             iconName = "notifications";
           } else if (route.name === "Profile") {
             iconName = "person";
+          } else if (route.name === "Settings") {
+            iconName = "settings";
           }
 
-          return <Ionicons name={iconName} size={size} color={color} />;
+          return (
+            <Ionicons
+              name={iconName}
+              size={size}
+              color={color}
+            />
+          );
         },
       })}
     >
@@ -63,6 +73,12 @@ export default function TabsNavigator() {
         name="Profile"
         component={Profile}
         options={{ title: "Perfil" }}
+      />
+
+      <Tab.Screen
+        name="Settings"
+        component={Settings}
+        options={{ title: "Configuración" }}
       />
     </Tab.Navigator>
   );
