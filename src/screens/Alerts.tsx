@@ -7,38 +7,55 @@ import {
   TouchableOpacity,
 } from "react-native";
 
+import StatusBadge from "../components/StatusBadge";
+
+type Alerta = {
+  id: string;
+  tipo: "offline" | "warning";
+  titulo: string;
+  mensaje: string;
+  cliente: string;
+  gateway: string;
+  meterId?: string;
+  gatewayId: string;
+};
+
 export default function Alerts({ navigation }: any) {
-const alertas = [
-  {
-    id: "1",
-    tipo: "offline",
-    titulo: "Medidor offline",
-    mensaje: "El Medidor 003 no está reportando información.",
-    cliente: "Supermercados Del Corral",
-    gateway: "Gateway Sucursal Principal",
-    meterId: "3",
-    gatewayId: "1",
-  },
-  {
-    id: "2",
-    tipo: "warning",
-    titulo: "Sin actualización",
-    mensaje: "El Medidor 002 no ha actualizado su lectura recientemente.",
-    cliente: "Empresa ABC",
-    gateway: "Gateway Sucursal Norte",
-    meterId: "2",
-    gatewayId: "2",
-  },
-  {
-    id: "3",
-    tipo: "offline",
-    titulo: "Gateway offline",
-    mensaje: "El gateway de la Sucursal Sur no está disponible.",
-    cliente: "Corporación XYZ",
-    gateway: "Gateway Sucursal Sur",
-    gatewayId: "3",
-  },
-];
+  const alertas: Alerta[] = [
+    {
+      id: "1",
+      tipo: "offline",
+      titulo: "Medidor offline",
+      mensaje: "El Medidor 003 no está reportando información.",
+      cliente: "Supermercados Del Corral",
+      gateway: "Gateway Sucursal Principal",
+      meterId: "3",
+      gatewayId: "1",
+    },
+
+    {
+      id: "2",
+      tipo: "warning",
+      titulo: "Sin actualización",
+      mensaje:
+        "El Medidor 002 no ha actualizado su lectura recientemente.",
+      cliente: "Empresa ABC",
+      gateway: "Gateway Sucursal Norte",
+      meterId: "2",
+      gatewayId: "2",
+    },
+
+    {
+      id: "3",
+      tipo: "offline",
+      titulo: "Gateway offline",
+      mensaje:
+        "El gateway de la Sucursal Sur no esta disponible.",
+      cliente: "Corporación XYZ",
+      gateway: "Gateway Sucursal Sur",
+      gatewayId: "3",
+    },
+  ];
 
   return (
     <ScrollView style={styles.container}>
@@ -64,26 +81,24 @@ const alertas = [
         <TouchableOpacity
           key={alerta.id}
           style={styles.alertCard}
-          onPress={() =>
-            alerta.meterId &&
-            navigation.navigate("MeterDetails", {
-              meterId: alerta.meterId,
-            })
-          }
+          onPress={() => {
+            if (alerta.meterId) {
+              navigation.navigate("MeterDetails", {
+                meterId: alerta.meterId,
+              });
+            } else {
+              navigation.navigate("GatewayDetails", {
+                gatewayId: alerta.gatewayId,
+              });
+            }
+          }}
         >
           <View style={styles.alertHeader}>
-            <View
-              style={[
-                styles.indicator,
-                alerta.tipo === "offline"
-                  ? styles.offlineIndicator
-                  : styles.warningIndicator,
-              ]}
-            />
-
             <Text style={styles.alertTitle}>
               {alerta.titulo}
             </Text>
+
+            <StatusBadge status={alerta.tipo} />
           </View>
 
           <Text style={styles.alertMessage}>
@@ -171,29 +186,17 @@ const styles = StyleSheet.create({
 
   alertHeader: {
     flexDirection: "row",
+    justifyContent: "space-between",
     alignItems: "center",
     marginBottom: 10,
-  },
-
-  indicator: {
-    width: 12,
-    height: 12,
-    borderRadius: 6,
-    marginRight: 10,
-  },
-
-  offlineIndicator: {
-    backgroundColor: "red",
-  },
-
-  warningIndicator: {
-    backgroundColor: "orange",
   },
 
   alertTitle: {
     fontSize: 17,
     fontWeight: "bold",
     color: "#333",
+    flex: 1,
+    marginRight: 10,
   },
 
   alertMessage: {

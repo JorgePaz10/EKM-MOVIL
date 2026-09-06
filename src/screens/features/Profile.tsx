@@ -9,59 +9,122 @@ import {
   Image,
 } from "react-native";
 
-export default function Profile() {
-  const nombre = "Jorge Paz";
+import { useUser } from "../../context/UserContext";
+
+export default function Profile({ navigation }: any) {
+
+  // Obtener datos actualizados del usuario
+  const { nombre, telefono } = useUser();
+
   const correo = "jorge@jutaru.com";
   const rol = "Administrador";
   const empresa = "Jutaru Control";
 
+  const cerrarSesion = () => {
+    navigation.getParent()?.replace("LoginScreen");
+  };
+
   return (
     <ScrollView style={styles.container}>
+
       {/* Encabezado */}
+
       <View style={styles.header}>
+
         <View style={styles.avatar}>
+
           <Image
             source={require("../../../assets/images/FotoDePefilJP.jpeg")}
             style={styles.profileImage}
           />
+
         </View>
 
-        <Text style={styles.name}>{nombre}</Text>
+        <Text style={styles.name}>
+          {nombre}
+        </Text>
 
-        <Text style={styles.role}>{rol}</Text>
+        <Text style={styles.role}>
+          {rol}
+        </Text>
+
       </View>
 
+
       {/* Información */}
+
       <Text style={styles.sectionTitle}>
         Información de usuario
       </Text>
 
       <View style={styles.card}>
-        <View style={styles.infoRow}>
-          <Text style={styles.label}>Correo</Text>
-          <Text style={styles.value}>{correo}</Text>
-        </View>
 
         <View style={styles.infoRow}>
-          <Text style={styles.label}>Rol</Text>
-          <Text style={styles.value}>{rol}</Text>
+
+          <Text style={styles.label}>
+            Correo
+          </Text>
+
+          <Text style={styles.value}>
+            {correo}
+          </Text>
+
         </View>
 
+
         <View style={styles.infoRow}>
-          <Text style={styles.label}>Empresa</Text>
-          <Text style={styles.value}>{empresa}</Text>
+
+          <Text style={styles.label}>
+            Teléfono
+          </Text>
+
+          <Text style={styles.value}>
+            {telefono || "No registrado"}
+          </Text>
+
         </View>
+
+
+        <View style={styles.infoRow}>
+
+          <Text style={styles.label}>
+            Rol
+          </Text>
+
+          <Text style={styles.value}>
+            {rol}
+          </Text>
+
+        </View>
+
+
+        <View style={styles.infoRow}>
+
+          <Text style={styles.label}>
+            Empresa
+          </Text>
+
+          <Text style={styles.value}>
+            {empresa}
+          </Text>
+
+        </View>
+
       </View>
 
+
       {/* Estado */}
+
       <Text style={styles.sectionTitle}>
         Estado de cuenta
       </Text>
 
       <View style={styles.statusCard}>
+
         <View style={styles.statusIndicator} />
 
         <View>
+
           <Text style={styles.statusTitle}>
             Cuenta activa
           </Text>
@@ -69,20 +132,31 @@ export default function Profile() {
           <Text style={styles.statusText}>
             El usuario tiene acceso al sistema.
           </Text>
+
         </View>
+
       </View>
 
+
       {/* Cerrar sesión */}
-      <TouchableOpacity style={styles.logoutButton}>
+
+      <TouchableOpacity
+        style={styles.logoutButton}
+        onPress={cerrarSesion}
+      >
+
         <Text style={styles.logoutText}>
           Cerrar sesión
         </Text>
+
       </TouchableOpacity>
+
     </ScrollView>
   );
 }
 
 const styles = StyleSheet.create({
+
   container: {
     flex: 1,
     backgroundColor: "#f4f6f8",
@@ -206,4 +280,5 @@ const styles = StyleSheet.create({
     fontSize: 15,
     fontWeight: "bold",
   },
+
 });

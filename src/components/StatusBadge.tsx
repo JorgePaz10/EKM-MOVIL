@@ -16,7 +16,7 @@ export default function StatusBadge({ status }: StatusBadgeProps) {
       icon: "●",
     },
     warning: {
-      text: "Alerta",
+      text: "Sin actualización",
       icon: "●",
     },
   };
@@ -33,7 +33,10 @@ export default function StatusBadge({ status }: StatusBadgeProps) {
       ]}
     >
       <Text style={styles.icon}>{currentStatus.icon}</Text>
-      <Text style={styles.text}>{currentStatus.text}</Text>
+
+      <Text style={styles.text}>
+        {currentStatus.text}
+      </Text>
     </View>
   );
 }
@@ -68,5 +71,6 @@ const styles = StyleSheet.create({
   text: {
     fontSize: 13,
     fontWeight: "bold",
+    color: "#333",
   },
 });

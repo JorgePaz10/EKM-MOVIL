@@ -6,7 +6,7 @@ import {
   ScrollView,
 } from "react-native";
 
-export default function Dashboard() {
+export default function Home() {
   // Datos de prueba
   const clientes = 12;
   const gateways = 18;

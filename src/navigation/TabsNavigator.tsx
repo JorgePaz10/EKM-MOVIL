@@ -2,14 +2,14 @@ import React from "react";
 import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
 import { Ionicons } from "@expo/vector-icons";
 
-import Dashboard from "../screens/Dashboard";
+import Dashboard from "../screens/Home";
 import Clients from "../screens/Clients";
 import Alerts from "../screens/Alerts";
 import Profile from "../screens/features/Profile";
 import Settings from "../screens/features/Settings";
 
 export type TabsParamList = {
-  Dashboard: undefined;
+  Home: undefined;
   Clients: undefined;
   Alerts: undefined;
   Profile: undefined;
@@ -29,7 +29,7 @@ export default function TabsNavigator() {
         tabBarIcon: ({ color, size }) => {
           let iconName: keyof typeof Ionicons.glyphMap = "home";
 
-          if (route.name === "Dashboard") {
+          if (route.name === "Home") {
             iconName = "home";
           } else if (route.name === "Clients") {
             iconName = "people";
@@ -52,7 +52,7 @@ export default function TabsNavigator() {
       })}
     >
       <Tab.Screen
-        name="Dashboard"
+        name="Home"
         component={Dashboard}
         options={{ title: "Jutaru Control" }}
       />

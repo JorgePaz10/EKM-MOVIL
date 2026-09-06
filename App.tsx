@@ -1,13 +1,15 @@
-import { View } from 'react-native';
-import React from 'react';
-import { NavigationContainer } from '@react-navigation/native';
-import StackNavigator from './src/navigation/StackNavigator';
+import React from "react";
+import { NavigationContainer } from "@react-navigation/native";
+
+import StackNavigator from "./src/navigation/StackNavigator";
+import { UserProvider } from "./src/context/UserContext";
 
 export default function App() {
-
   return (
-    <NavigationContainer>
+    <UserProvider>
+      <NavigationContainer>
         <StackNavigator />
-    </NavigationContainer>
+      </NavigationContainer>
+    </UserProvider>
   );
 }

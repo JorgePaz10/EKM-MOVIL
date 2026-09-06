@@ -8,6 +8,7 @@ import {
 
 import GatewayCard from "../components/GatewayCard";
 import MeterCard from "../components/MeterCard";
+import StatusBadge from "../components/StatusBadge";
 
 export default function GatewayDetails({ route, navigation }: any) {
   const { gatewayId } = route.params;
@@ -63,7 +64,7 @@ export default function GatewayDetails({ route, navigation }: any) {
     {
       id: "4",
       nombre: "Medidor 004",
-      estado: "Online",
+      estado: "Sin actualización",
       lectura: 1456.8,
     },
   ];
@@ -73,7 +74,9 @@ export default function GatewayDetails({ route, navigation }: any) {
   const gatewayStatus =
     gateway.estado === "Online"
       ? "online"
-      : "offline";
+      : gateway.estado === "Offline"
+        ? "offline"
+        : "warning";
 
   return (
     <ScrollView style={styles.container}>
@@ -113,6 +116,14 @@ export default function GatewayDetails({ route, navigation }: any) {
             {gateway.ubicacion}
           </Text>
         </View>
+
+        <View style={styles.infoRow}>
+          <Text style={styles.infoLabel}>
+            Estado
+          </Text>
+
+          <StatusBadge status={gatewayStatus} />
+        </View>
       </View>
 
       {/* Medidores */}
@@ -128,7 +139,9 @@ export default function GatewayDetails({ route, navigation }: any) {
           status={
             medidor.estado === "Online"
               ? "online"
-              : "offline"
+              : medidor.estado === "Offline"
+                ? "offline"
+                : "warning"
           }
           onPress={() =>
             navigation.navigate("MeterDetails", {

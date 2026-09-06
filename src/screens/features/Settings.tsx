@@ -1,4 +1,6 @@
+
 import React, { useState } from "react";
+
 import {
   View,
   Text,
@@ -10,37 +12,131 @@ import {
 import CustomInput from "../../components/CustomInput";
 import CustomButton from "../../components/CustomButton";
 
+import { useUser } from "../../context/UserContext";
+
 export default function Settings() {
-  const [nombre, setNombre] = useState("");
-  const [telefono, setTelefono] = useState("");
+
+  // Datos compartidos del usuario
+  const { nombre, telefono, setNombre, setTelefono } = useUser();
+
+  // Estados temporales para editar
+  const [nombreTemp, setNombreTemp] = useState(nombre);
+  const [telefonoTemp, setTelefonoTemp] = useState(telefono);
 
   const [nombreError, setNombreError] = useState("");
   const [telefonoError, setTelefonoError] = useState("");
 
+  // =========================
+  // MANEJAR NOMBRE
+  // =========================
+
+  const manejarNombre = (texto: string) => {
+    setNombreTemp(texto);
+
+    // Quitar error mientras escribe
+    if (texto.trim() !== "") {
+      setNombreError("");
+    }
+  };
+
+  // =========================
+  // MANEJAR TELÉFONO
+  // =========================
+
+  const manejarTelefono = (texto: string) => {
+
+    // Eliminar todo lo que no sean números
+    let numeros = texto.replace(/\D/g, "");
+
+    // Máximo 8 números
+    numeros = numeros.slice(0, 8);
+
+    // Agregar guion después de los primeros 4 números
+    if (numeros.length > 4) {
+      numeros =
+        numeros.slice(0, 4) + "-" + numeros.slice(4);
+    }
+
+    setTelefonoTemp(numeros);
+
+    // Validación mientras escribe
+    if (numeros.length === 0) {
+      setTelefonoError("");
+    } else {
+      const cantidadNumeros = numeros.replace(/\D/g, "").length;
+
+      if (cantidadNumeros < 8) {
+        setTelefonoError(
+          "El teléfono debe tener 8 números"
+        );
+      } else {
+        setTelefonoError("");
+      }
+    }
+  };
+
+  // =========================
+  // GUARDAR CAMBIOS
+  // =========================
+
   const guardarCambios = () => {
+
     let valido = true;
 
     setNombreError("");
     setTelefonoError("");
 
-    // Validación del nombre
-    if (nombre.trim() === "") {
-      setNombreError("El nombre es obligatorio");
+    // -------------------------
+    // Validar nombre
+    // -------------------------
+
+    if (nombreTemp.trim() === "") {
+
+      setNombreError(
+        "Por favor, introduzca un nombre"
+      );
+
       valido = false;
     }
 
-    // Validación del teléfono
-    if (telefono.trim() === "") {
-      setTelefonoError("El teléfono es obligatorio");
+    // -------------------------
+    // Validar teléfono
+    // -------------------------
+
+    const numerosTelefono =
+      telefonoTemp.replace(/\D/g, "");
+
+    if (numerosTelefono === "") {
+
+      setTelefonoError(
+        "El teléfono es obligatorio"
+      );
+
       valido = false;
-    } else if (telefono.length < 8) {
-      setTelefonoError("El teléfono debe tener al menos 8 números");
+
+    } else if (numerosTelefono.length < 8) {
+
+      setTelefonoError(
+        "El teléfono debe tener exactamente 8 números"
+      );
+
       valido = false;
     }
+
+    // -------------------------
+    // Si hay errores
+    // -------------------------
 
     if (!valido) {
       return;
     }
+
+    // -------------------------
+    // Guardar datos
+    // -------------------------
+
+    setNombre(nombreTemp);
+    setTelefono(telefonoTemp);
 
     Alert.alert(
       "Datos guardados",
@@ -50,20 +146,30 @@ export default function Settings() {
 
   return (
     <ScrollView style={styles.container}>
-      <Text style={styles.title}>Configuración</Text>
+
+      <Text style={styles.title}>
+        Configuración
+      </Text>
 
       <Text style={styles.subtitle}>
         Información personal
       </Text>
 
-      {/* Nombre */}
-      <Text style={styles.label}>Nombre</Text>
+
+      {/* =========================
+          NOMBRE
+      ========================= */}
+
+      <Text style={styles.label}>
+        Nombre
+      </Text>
 
       <CustomInput
         placeholder="Ingrese su nombre"
-        value={nombre}
-        onChangeText={setNombre}
+        value={nombreTemp}
+        onChangeText={manejarNombre}
         type="default"
+        error={nombreError !== ""}
       />
 
       {nombreError !== "" && (
@@ -72,14 +178,21 @@ export default function Settings() {
         </Text>
       )}
 
-      {/* Teléfono */}
-      <Text style={styles.label}>Teléfono</Text>
+
+      {/* =========================
+          TELÉFONO
+      ========================= */}
+
+      <Text style={styles.label}>
+        Teléfono
+      </Text>
 
       <CustomInput
         placeholder="Ingrese su teléfono"
-        value={telefono}
-        onChangeText={setTelefono}
+        value={telefonoTemp}
+        onChangeText={manejarTelefono}
         type="number"
+        error={telefonoError !== ""}
       />
 
       {telefonoError !== "" && (
@@ -88,18 +201,27 @@ export default function Settings() {
         </Text>
       )}
 
+
+      {/* =========================
+          BOTÓN
+      ========================= */}
+
       <View style={styles.buttonContainer}>
+
         <CustomButton
           title="Guardar cambios"
           onPress={guardarCambios}
           variant="primary"
         />
+
       </View>
+
     </ScrollView>
   );
 }
 
 const styles = StyleSheet.create({
+
   container: {
     flex: 1,
     backgroundColor: "#f4f6f8",
@@ -137,4 +259,5 @@ const styles = StyleSheet.create({
     alignItems: "center",
     marginTop: 20,
   },
+
 });

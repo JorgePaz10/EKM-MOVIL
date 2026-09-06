@@ -46,10 +46,10 @@ export default function MeterDetails({ route }: any) {
       nombre: "Medidor 004",
       gateway: "Gateway Sucursal Principal",
       mac: "00:1A:2B:3C:4D:04",
-      estado: "Online",
+      estado: "Sin actualización",
       lectura: "1456.80 kWh",
       fecha: "03/09/2026",
-      hora: "19:45",
+      hora: "19:00",
     },
   };
 
@@ -58,7 +58,9 @@ export default function MeterDetails({ route }: any) {
   const meterStatus =
     medidor.estado === "Online"
       ? "online"
-      : "offline";
+      : medidor.estado === "Offline"
+        ? "offline"
+        : "warning";
 
   return (
     <ScrollView style={styles.container}>
@@ -150,7 +152,9 @@ export default function MeterDetails({ route }: any) {
         <Text style={styles.monitorText}>
           {medidor.estado === "Online"
             ? "El medidor está reportando información correctamente."
-            : "El medidor no está reportando información actualmente."}
+            : medidor.estado === "Offline"
+              ? "El medidor no está reportando información actualmente."
+              : "El medidor tiene información, pero no se ha actualizado recientemente."}
         </Text>
       </View>
     </ScrollView>
