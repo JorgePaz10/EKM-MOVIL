@@ -12,11 +12,17 @@ import CustomButton from "../components/CustomButton";
 import { useLanguage } from "../context/LanguageContext";
 import { translations } from "../utils/translations/translations";
 
+// AUTH CONTEXT
+import { useAuth } from "../context/AuthContext";
+
 export default function Login({ navigation }: any) {
 
   // Idioma actual y textos traducidos
   const { language, changeLanguage } = useLanguage();
   const t = translations[language];
+
+  // AUTH CONTEXT
+  const { login, loginWithGoogle } = useAuth();
 
   // Variables de estado
   const [email, setEmail] = useState("");
@@ -26,7 +32,10 @@ export default function Login({ navigation }: any) {
   const [emailError, setEmailError] = useState("");
   const [passwordError, setPasswordError] = useState("");
 
-  const handleLogin = () => {
+  // =========================
+  // LOGIN NORMAL
+  // =========================
+  const handleLogin = async () => {
 
     let valid = true;
 
@@ -36,35 +45,94 @@ export default function Login({ navigation }: any) {
     // =========================
     // VALIDAR CORREO
     // =========================
-
     if (email.trim() === "") {
+
       setEmailError("El correo es obligatorio.");
       valid = false;
+
     } else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
+
       setEmailError("El correo no es válido.");
       valid = false;
+
     }
 
     // =========================
     // VALIDAR CONTRASEÑA
     // =========================
-
     if (password.trim() === "") {
+
       setPasswordError("La contraseña es obligatoria.");
       valid = false;
+
     } else if (password.length < 6) {
+
       setPasswordError("La contraseña es insegura.");
       valid = false;
+
     }
 
+    // Si hay errores de validación
     if (!valid) {
       return;
     }
 
-    navigation.navigate("UserTabs");
+    // =========================
+    // LOGIN CON SUPABASE
+    // =========================
+
+    console.log("Intentando iniciar sesión...");
+
+    const success = await login(
+      email,
+      password
+    );
+
+    console.log("Resultado login:", success);
+
+    // =========================
+    // USUARIO AUTORIZADO
+    // =========================
+
+    if (success) {
+
+      console.log("Usuario autorizado.");
+
+      navigation.navigate("UserTabs");
+
+    } else {
+
+      // =========================
+      // USUARIO NO AUTORIZADO
+      // =========================
+
+      setPasswordError(
+        "Correo, contraseña o autorización incorrectos."
+      );
+
+    }
+  };
+
+  // =========================
+  // LOGIN CON GOOGLE
+  // =========================
+  const handleGoogleLogin = async () => {
+
+    console.log("Iniciando login con Google...");
+
+    const success = await loginWithGoogle();
+
+    console.log("Resultado Google:", success);
+
+    if (success) {
+
+      navigation.navigate("UserTabs");
+
+    }
   };
 
   return (
+
     <View style={styles.container}>
 
       <Text style={styles.title}>
@@ -74,7 +142,6 @@ export default function Login({ navigation }: any) {
       <Text style={styles.subtitle}>
         {t.welcomeLogin}
       </Text>
-
 
       {/* CORREO */}
 
@@ -87,11 +154,12 @@ export default function Login({ navigation }: any) {
       />
 
       {emailError !== "" && (
+
         <Text style={styles.errorText}>
           {emailError}
         </Text>
-      )}
 
+      )}
 
       {/* CONTRASEÑA */}
 
@@ -104,17 +172,26 @@ export default function Login({ navigation }: any) {
       />
 
       {passwordError !== "" && (
+
         <Text style={styles.errorText}>
           {passwordError}
         </Text>
+
       )}
 
+      {/* LOGIN NORMAL */}
 
       <CustomButton
         title={t.signIn}
         onPress={handleLogin}
       />
 
+      {/* LOGIN CON GOOGLE */}
+
+      <CustomButton
+        title="Continuar con Google"
+        onPress={handleGoogleLogin}
+      />
 
       {/* SELECTOR DE IDIOMA */}
 
@@ -123,7 +200,8 @@ export default function Login({ navigation }: any) {
         <Text
           style={[
             styles.langOption,
-            language === "es" && styles.langOptionActive,
+            language === "es" &&
+              styles.langOptionActive,
           ]}
           onPress={() => changeLanguage("es")}
         >
@@ -133,7 +211,8 @@ export default function Login({ navigation }: any) {
         <Text
           style={[
             styles.langOption,
-            language === "en" && styles.langOptionActive,
+            language === "en" &&
+              styles.langOptionActive,
           ]}
           onPress={() => changeLanguage("en")}
         >
