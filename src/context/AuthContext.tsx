@@ -7,7 +7,7 @@ import React, {
 import * as WebBrowser from "expo-web-browser";
 import * as AuthSession from "expo-auth-session";
 
-import { supabase } from "../utils/supabase";
+import { supabase } from "../lib/supabase";
 
 WebBrowser.maybeCompleteAuthSession();
 

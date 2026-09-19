@@ -8,6 +8,8 @@ import Alerts from "../screens/Alerts";
 import Profile from "../screens/features/Profile";
 import Settings from "../screens/features/Settings";
 
+import { useTheme } from "../context/ThemeContext";
+
 export type TabsParamList = {
   Home: undefined;
   Clients: undefined;
@@ -19,14 +21,40 @@ export type TabsParamList = {
 const Tab = createBottomTabNavigator<TabsParamList>();
 
 export default function TabsNavigator() {
+
+  const { colors, isDark } = useTheme();
+
   return (
     <Tab.Navigator
       screenOptions={({ route }) => ({
         headerShown: true,
-        tabBarActiveTintColor: "#206291",
-        tabBarInactiveTintColor: "gray",
+
+        // Color del icono seleccionado
+        tabBarActiveTintColor: colors.primary,
+
+        // Color de los iconos no seleccionados
+        tabBarInactiveTintColor: colors.textSecondary,
+
+        // Fondo de la barra inferior
+        tabBarStyle: {
+          backgroundColor: colors.background,
+          borderTopColor: colors.border,
+        },
+
+        // Color del texto de las pestañas
+        tabBarLabelStyle: {
+          color: colors.text,
+        },
+
+        // Fondo y texto del encabezado
+        headerStyle: {
+          backgroundColor: colors.background,
+        },
+
+        headerTintColor: colors.text,
 
         tabBarIcon: ({ color, size }) => {
+
           let iconName: keyof typeof Ionicons.glyphMap = "home";
 
           if (route.name === "Home") {
@@ -51,10 +79,11 @@ export default function TabsNavigator() {
         },
       })}
     >
+
       <Tab.Screen
         name="Home"
         component={Dashboard}
-        options={{ title: "Jutaru Control" }}
+        options={{ title: "Home" }}
       />
 
       <Tab.Screen
@@ -78,8 +107,9 @@ export default function TabsNavigator() {
       <Tab.Screen
         name="Settings"
         component={Settings}
-        options={{ title: "Configuración" }}
+        options={{ title: "Configuracion" }}
       />
+
     </Tab.Navigator>
   );
 }
