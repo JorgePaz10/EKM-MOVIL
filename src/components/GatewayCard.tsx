@@ -7,6 +7,7 @@ import {
 } from "react-native";
 
 import StatusBadge from "./StatusBadge";
+import { useTheme } from "../context/ThemeContext";
 
 type GatewayCardProps = {
   name: string;
@@ -21,6 +22,9 @@ export default function GatewayCard({
   status,
   onPress,
 }: GatewayCardProps) {
+  const { colors } = useTheme();
+  const styles = crearEstilos(colors);
+
   return (
     <TouchableOpacity
       style={styles.card}
@@ -40,10 +44,7 @@ export default function GatewayCard({
 
       <View style={styles.infoContainer}>
         <Text style={styles.infoLabel}>Medidores conectados</Text>
-
-        <Text style={styles.infoValue}>
-          {meters}
-        </Text>
+        <Text style={styles.infoValue}>{meters}</Text>
       </View>
 
       <Text style={styles.details}>
@@ -53,68 +54,59 @@ export default function GatewayCard({
   );
 }
 
-const styles = StyleSheet.create({
+const crearEstilos = (colors: any) => StyleSheet.create({
   card: {
-    backgroundColor: "#ffffff",
+    backgroundColor: colors.cardBackground,
     borderRadius: 12,
     padding: 16,
     marginBottom: 12,
     borderWidth: 1,
-    borderColor: "#e0e0e0",
+    borderColor: colors.cardBorder,
   },
-
   header: {
     flexDirection: "row",
     alignItems: "center",
     marginBottom: 15,
   },
-
   iconContainer: {
     width: 45,
     height: 45,
     borderRadius: 10,
-    backgroundColor: "#eaf2f8",
+    backgroundColor: colors.surface,
     justifyContent: "center",
     alignItems: "center",
     marginRight: 12,
   },
-
   icon: {
     fontSize: 23,
   },
-
   titleContainer: {
     flex: 1,
   },
-
   title: {
     fontSize: 18,
     fontWeight: "bold",
-    color: "#333",
+    color: colors.text,
     marginBottom: 5,
   },
-
   infoContainer: {
     flexDirection: "row",
     alignItems: "center",
     justifyContent: "space-between",
     marginBottom: 12,
   },
-
   infoLabel: {
     fontSize: 14,
-    color: "#777",
+    color: colors.textSecondary,
   },
-
   infoValue: {
     fontSize: 20,
     fontWeight: "bold",
-    color: "#206291",
+    color: colors.primary,
   },
-
   details: {
     textAlign: "right",
-    color: "#206291",
+    color: colors.primary,
     fontWeight: "bold",
     fontSize: 14,
   },

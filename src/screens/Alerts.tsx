@@ -1,13 +1,8 @@
 import React from "react";
-import {
-  View,
-  Text,
-  StyleSheet,
-  ScrollView,
-  TouchableOpacity,
-} from "react-native";
+import {View,Text,StyleSheet,ScrollView,TouchableOpacity,} from "react-native";
 
 import StatusBadge from "../components/StatusBadge";
+import { useTheme } from "../context/ThemeContext";
 
 type Alerta = {
   id: string;
@@ -21,6 +16,9 @@ type Alerta = {
 };
 
 export default function Alerts({ navigation }: any) {
+  const { colors } = useTheme();
+  const styles = crearEstilos(colors);
+
   const alertas: Alerta[] = [
     {
       id: "1",
@@ -32,7 +30,6 @@ export default function Alerts({ navigation }: any) {
       meterId: "3",
       gatewayId: "1",
     },
-
     {
       id: "2",
       tipo: "warning",
@@ -44,7 +41,6 @@ export default function Alerts({ navigation }: any) {
       meterId: "2",
       gatewayId: "2",
     },
-
     {
       id: "3",
       tipo: "offline",
@@ -65,18 +61,15 @@ export default function Alerts({ navigation }: any) {
         Incidencias que requieren atención
       </Text>
 
-      {/* Resumen */}
       <View style={styles.summaryCard}>
         <Text style={styles.summaryTitle}>
           Alertas activas
         </Text>
-
         <Text style={styles.summaryValue}>
           {alertas.length}
         </Text>
       </View>
 
-      {/* Lista de alertas */}
       {alertas.map((alerta) => (
         <TouchableOpacity
           key={alerta.id}
@@ -97,7 +90,6 @@ export default function Alerts({ navigation }: any) {
             <Text style={styles.alertTitle}>
               {alerta.titulo}
             </Text>
-
             <StatusBadge status={alerta.tipo} />
           </View>
 
@@ -109,7 +101,6 @@ export default function Alerts({ navigation }: any) {
             <Text style={styles.infoText}>
               Cliente: {alerta.cliente}
             </Text>
-
             <Text style={styles.infoText}>
               Gateway: {alerta.gateway}
             </Text>
@@ -126,7 +117,6 @@ export default function Alerts({ navigation }: any) {
           <Text style={styles.emptyTitle}>
             Sin alertas
           </Text>
-
           <Text style={styles.emptyText}>
             Todos los sistemas se encuentran funcionando correctamente.
           </Text>
@@ -136,112 +126,103 @@ export default function Alerts({ navigation }: any) {
   );
 }
 
-const styles = StyleSheet.create({
+const crearEstilos = (colors: any) => StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: "#f4f6f8",
+    backgroundColor: colors.background,
     padding: 20,
   },
-
   title: {
     fontSize: 28,
     fontWeight: "bold",
-    color: "#206291",
+    color: colors.primary,
     marginBottom: 5,
   },
-
   subtitle: {
     fontSize: 15,
-    color: "#666",
+    color: colors.textSecondary,
     marginBottom: 20,
   },
-
   summaryCard: {
-    backgroundColor: "#fff",
+    backgroundColor: colors.cardBackground,
+    borderWidth: 1,
+    borderColor: colors.cardBorder,
     borderRadius: 10,
     padding: 20,
     marginBottom: 20,
     elevation: 3,
   },
-
   summaryTitle: {
     fontSize: 15,
-    color: "#666",
+    color: colors.textSecondary,
   },
-
   summaryValue: {
     fontSize: 32,
     fontWeight: "bold",
-    color: "#206291",
+    color: colors.primary,
     marginTop: 5,
   },
-
   alertCard: {
-    backgroundColor: "#fff",
+    backgroundColor: colors.cardBackground,
+    borderWidth: 1,
+    borderColor: colors.cardBorder,
     borderRadius: 10,
     padding: 18,
     marginBottom: 15,
     elevation: 3,
   },
-
   alertHeader: {
     flexDirection: "row",
     justifyContent: "space-between",
     alignItems: "center",
     marginBottom: 10,
   },
-
   alertTitle: {
     fontSize: 17,
     fontWeight: "bold",
-    color: "#333",
+    color: colors.text,
     flex: 1,
     marginRight: 10,
   },
-
   alertMessage: {
     fontSize: 15,
-    color: "#555",
+    color: colors.textSecondary,
     lineHeight: 21,
     marginBottom: 12,
   },
-
   infoContainer: {
     borderTopWidth: 1,
-    borderTopColor: "#eee",
+    borderTopColor: colors.border,
     paddingTop: 10,
   },
-
   infoText: {
     fontSize: 13,
-    color: "#666",
+    color: colors.textSecondary,
     marginBottom: 4,
   },
-
   detailsText: {
     marginTop: 8,
     fontSize: 14,
     fontWeight: "bold",
-    color: "#206291",
+    color: colors.primary,
   },
-
   emptyCard: {
-    backgroundColor: "#fff",
+    backgroundColor: colors.cardBackground,
+    borderWidth: 1,
+    borderColor: colors.cardBorder,
     borderRadius: 10,
     padding: 20,
     elevation: 3,
   },
-
   emptyTitle: {
     fontSize: 18,
     fontWeight: "bold",
-    color: "#333",
+    color: colors.text,
     marginBottom: 8,
   },
-
   emptyText: {
     fontSize: 15,
-    color: "#666",
+    color: colors.textSecondary,
     lineHeight: 22,
   },
 });

@@ -10,8 +10,12 @@ import {
 } from "react-native";
 
 import { useUser } from "../../context/UserContext";
+import { useTheme } from "../../context/ThemeContext";
 
 export default function Profile({ navigation }: any) {
+
+  const { colors } = useTheme();
+  const styles = crearEstilos(colors);
 
   // Obtener datos actualizados del usuario
   const { nombre, telefono } = useUser();
@@ -60,54 +64,23 @@ export default function Profile({ navigation }: any) {
       <View style={styles.card}>
 
         <View style={styles.infoRow}>
-
-          <Text style={styles.label}>
-            Correo
-          </Text>
-
-          <Text style={styles.value}>
-            {correo}
-          </Text>
-
+          <Text style={styles.label}>Correo</Text>
+          <Text style={styles.value}>{correo}</Text>
         </View>
 
-
         <View style={styles.infoRow}>
-
-          <Text style={styles.label}>
-            Teléfono
-          </Text>
-
-          <Text style={styles.value}>
-            {telefono || "No registrado"}
-          </Text>
-
+          <Text style={styles.label}>Teléfono</Text>
+          <Text style={styles.value}>{telefono || "No registrado"}</Text>
         </View>
 
-
         <View style={styles.infoRow}>
-
-          <Text style={styles.label}>
-            Rol
-          </Text>
-
-          <Text style={styles.value}>
-            {rol}
-          </Text>
-
+          <Text style={styles.label}>Rol</Text>
+          <Text style={styles.value}>{rol}</Text>
         </View>
 
-
         <View style={styles.infoRow}>
-
-          <Text style={styles.label}>
-            Empresa
-          </Text>
-
-          <Text style={styles.value}>
-            {empresa}
-          </Text>
-
+          <Text style={styles.label}>Empresa</Text>
+          <Text style={styles.value}>{empresa}</Text>
         </View>
 
       </View>
@@ -124,15 +97,10 @@ export default function Profile({ navigation }: any) {
         <View style={styles.statusIndicator} />
 
         <View>
-
-          <Text style={styles.statusTitle}>
-            Cuenta activa
-          </Text>
-
+          <Text style={styles.statusTitle}>Cuenta activa</Text>
           <Text style={styles.statusText}>
             El usuario tiene acceso al sistema.
           </Text>
-
         </View>
 
       </View>
@@ -144,22 +112,20 @@ export default function Profile({ navigation }: any) {
         style={styles.logoutButton}
         onPress={cerrarSesion}
       >
-
         <Text style={styles.logoutText}>
           Cerrar sesión
         </Text>
-
       </TouchableOpacity>
 
     </ScrollView>
   );
 }
 
-const styles = StyleSheet.create({
+const crearEstilos = (colors: any) => StyleSheet.create({
 
   container: {
     flex: 1,
-    backgroundColor: "#f4f6f8",
+    backgroundColor: colors.background,
     padding: 20,
   },
 
@@ -172,7 +138,7 @@ const styles = StyleSheet.create({
     width: 90,
     height: 90,
     borderRadius: 45,
-    backgroundColor: "#206291",
+    backgroundColor: colors.primary,
     justifyContent: "center",
     alignItems: "center",
     marginBottom: 12,
@@ -188,25 +154,27 @@ const styles = StyleSheet.create({
   name: {
     fontSize: 24,
     fontWeight: "bold",
-    color: "#333",
+    color: colors.text,
   },
 
   role: {
     fontSize: 15,
-    color: "#666",
+    color: colors.textSecondary,
     marginTop: 4,
   },
 
   sectionTitle: {
     fontSize: 20,
     fontWeight: "bold",
-    color: "#333",
+    color: colors.text,
     marginBottom: 12,
     marginTop: 10,
   },
 
   card: {
-    backgroundColor: "#fff",
+    backgroundColor: colors.cardBackground,
+    borderWidth: 1,
+    borderColor: colors.cardBorder,
     borderRadius: 10,
     padding: 18,
     marginBottom: 20,
@@ -219,24 +187,26 @@ const styles = StyleSheet.create({
     alignItems: "center",
     paddingVertical: 12,
     borderBottomWidth: 1,
-    borderBottomColor: "#eee",
+    borderBottomColor: colors.border,
   },
 
   label: {
     fontSize: 14,
-    color: "#666",
+    color: colors.textSecondary,
   },
 
   value: {
     fontSize: 14,
     fontWeight: "bold",
-    color: "#333",
+    color: colors.text,
     maxWidth: "60%",
     textAlign: "right",
   },
 
   statusCard: {
-    backgroundColor: "#fff",
+    backgroundColor: colors.cardBackground,
+    borderWidth: 1,
+    borderColor: colors.cardBorder,
     borderRadius: 10,
     padding: 18,
     flexDirection: "row",
@@ -256,17 +226,17 @@ const styles = StyleSheet.create({
   statusTitle: {
     fontSize: 16,
     fontWeight: "bold",
-    color: "#333",
+    color: colors.text,
   },
 
   statusText: {
     fontSize: 13,
-    color: "#666",
+    color: colors.textSecondary,
     marginTop: 3,
   },
 
   logoutButton: {
-    backgroundColor: "#fff",
+    backgroundColor: colors.cardBackground,
     borderWidth: 1,
     borderColor: "#d9534f",
     borderRadius: 8,

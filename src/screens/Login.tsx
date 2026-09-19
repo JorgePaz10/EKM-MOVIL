@@ -1,4 +1,3 @@
-
 import React, { useState } from "react";
 
 import {
@@ -10,7 +9,14 @@ import {
 import CustomInput from "../components/CustomInput";
 import CustomButton from "../components/CustomButton";
 
+import { useLanguage } from "../context/LanguageContext";
+import { translations } from "../utils/translations/translations";
+
 export default function Login({ navigation }: any) {
+
+  // Idioma actual y textos traducidos
+  const { language, changeLanguage } = useLanguage();
+  const t = translations[language];
 
   // Variables de estado
   const [email, setEmail] = useState("");
@@ -24,7 +30,6 @@ export default function Login({ navigation }: any) {
 
     let valid = true;
 
-    // Limpiar errores anteriores
     setEmailError("");
     setPasswordError("");
 
@@ -33,15 +38,11 @@ export default function Login({ navigation }: any) {
     // =========================
 
     if (email.trim() === "") {
-
       setEmailError("El correo es obligatorio.");
       valid = false;
-
     } else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
-
       setEmailError("El correo no es válido.");
       valid = false;
-
     }
 
     // =========================
@@ -49,23 +50,17 @@ export default function Login({ navigation }: any) {
     // =========================
 
     if (password.trim() === "") {
-
       setPasswordError("La contraseña es obligatoria.");
       valid = false;
-
     } else if (password.length < 6) {
-
       setPasswordError("La contraseña es insegura.");
       valid = false;
-
     }
 
-    // Si hay algún error, no continuar
     if (!valid) {
       return;
     }
 
-    // Si todo está correcto
     navigation.navigate("UserTabs");
   };
 
@@ -77,7 +72,7 @@ export default function Login({ navigation }: any) {
       </Text>
 
       <Text style={styles.subtitle}>
-        Inicia sesión para continuar
+        {t.welcomeLogin}
       </Text>
 
 
@@ -86,7 +81,7 @@ export default function Login({ navigation }: any) {
       <CustomInput
         onChangeText={setEmail}
         value={email}
-        placeholder="Ingresa tu email"
+        placeholder={t.typeEmail}
         type="email"
         error={emailError !== ""}
       />
@@ -103,7 +98,7 @@ export default function Login({ navigation }: any) {
       <CustomInput
         onChangeText={setPassword}
         value={password}
-        placeholder="Ingresa tu contraseña"
+        placeholder={t.typePwd}
         type="password"
         error={passwordError !== ""}
       />
@@ -116,9 +111,36 @@ export default function Login({ navigation }: any) {
 
 
       <CustomButton
-        title="Iniciar Sesión"
+        title={t.signIn}
         onPress={handleLogin}
       />
+
+
+      {/* SELECTOR DE IDIOMA */}
+
+      <View style={styles.langRow}>
+
+        <Text
+          style={[
+            styles.langOption,
+            language === "es" && styles.langOptionActive,
+          ]}
+          onPress={() => changeLanguage("es")}
+        >
+          ES
+        </Text>
+
+        <Text
+          style={[
+            styles.langOption,
+            language === "en" && styles.langOptionActive,
+          ]}
+          onPress={() => changeLanguage("en")}
+        >
+          EN
+        </Text>
+
+      </View>
 
     </View>
   );
@@ -153,6 +175,25 @@ const styles = StyleSheet.create({
     width: "100%",
     marginTop: -5,
     marginBottom: 8,
+  },
+
+  langRow: {
+    flexDirection: "row",
+    marginTop: 20,
+    gap: 15,
+  },
+
+  langOption: {
+    fontSize: 14,
+    fontWeight: "bold",
+    color: "#999",
+    paddingVertical: 4,
+    paddingHorizontal: 10,
+  },
+
+  langOptionActive: {
+    color: "#206291",
+    textDecorationLine: "underline",
   },
 
 });

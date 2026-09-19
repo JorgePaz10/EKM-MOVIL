@@ -1,20 +1,20 @@
-
 import React, { useState } from "react";
-
-import {
-  View,
-  Text,
-  StyleSheet,
-  ScrollView,
-  Alert,
-} from "react-native";
+import {View,Text,StyleSheet,ScrollView,Alert,Switch,} from "react-native";
 
 import CustomInput from "../../components/CustomInput";
 import CustomButton from "../../components/CustomButton";
 
 import { useUser } from "../../context/UserContext";
+import { useTheme } from "../../context/ThemeContext";
+import { useLanguage } from "../../context/LanguageContext";
 
 export default function Settings() {
+
+  // Tema (colores + toggle claro/oscuro)
+  const { isDark, colors, toggleTheme } = useTheme();
+
+  // Idioma actual
+  const { language, changeLanguage } = useLanguage();
 
   // Datos compartidos del usuario
   const { nombre, telefono, setNombre, setTelefono } = useUser();
@@ -33,7 +33,6 @@ export default function Settings() {
   const manejarNombre = (texto: string) => {
     setNombreTemp(texto);
 
-    // Quitar error mientras escribe
     if (texto.trim() !== "") {
       setNombreError("");
     }
@@ -45,13 +44,9 @@ export default function Settings() {
 
   const manejarTelefono = (texto: string) => {
 
-    // Eliminar todo lo que no sean números
     let numeros = texto.replace(/\D/g, "");
-
-    // Máximo 8 números
     numeros = numeros.slice(0, 8);
 
-    // Agregar guion después de los primeros 4 números
     if (numeros.length > 4) {
       numeros =
         numeros.slice(0, 4) + "-" + numeros.slice(4);
@@ -59,7 +54,6 @@ export default function Settings() {
 
     setTelefonoTemp(numeros);
 
-    // Validación mientras escribe
     if (numeros.length === 0) {
       setTelefonoError("");
     } else {
@@ -86,54 +80,32 @@ export default function Settings() {
     setNombreError("");
     setTelefonoError("");
 
-    // -------------------------
-    // Validar nombre
-    // -------------------------
-
     if (nombreTemp.trim() === "") {
-
       setNombreError(
         "Por favor, introduzca un nombre"
       );
-
       valido = false;
     }
-
-    // -------------------------
-    // Validar teléfono
-    // -------------------------
 
     const numerosTelefono =
       telefonoTemp.replace(/\D/g, "");
 
     if (numerosTelefono === "") {
-
       setTelefonoError(
         "El teléfono es obligatorio"
       );
-
       valido = false;
 
     } else if (numerosTelefono.length < 8) {
-
       setTelefonoError(
         "El teléfono debe tener exactamente 8 números"
       );
-
       valido = false;
     }
-
-    // -------------------------
-    // Si hay errores
-    // -------------------------
 
     if (!valido) {
       return;
     }
-
-    // -------------------------
-    // Guardar datos
-    // -------------------------
 
     setNombre(nombreTemp);
     setTelefono(telefonoTemp);
@@ -143,6 +115,9 @@ export default function Settings() {
       "La información se guardó correctamente."
     );
   };
+
+  // Estilos dinámicos según el tema actual
+  const styles = crearEstilos(colors);
 
   return (
     <ScrollView style={styles.container}>
@@ -203,7 +178,7 @@ export default function Settings() {
 
 
       {/* =========================
-          BOTÓN
+          BOTÓN GUARDAR
       ========================= */}
 
       <View style={styles.buttonContainer}>
@@ -216,35 +191,105 @@ export default function Settings() {
 
       </View>
 
+
+      {/* =========================
+          APARIENCIA
+      ========================= */}
+
+      <Text style={styles.subtitle}>
+        Apariencia
+      </Text>
+
+      <View style={styles.themeRow}>
+
+        <Text style={styles.label}>
+          Modo oscuro
+        </Text>
+
+        <Switch
+          value={isDark}
+          onValueChange={toggleTheme}
+          trackColor={{ false: colors.border, true: colors.primary }}
+          thumbColor={colors.surface}
+        />
+
+      </View>
+
+
+      {/* =========================
+          IDIOMA
+      ========================= */}
+
+      <Text style={styles.subtitle}>
+        Idioma
+      </Text>
+
+      <View style={styles.themeRow}>
+
+        <Text style={styles.label}>
+          Español / English
+        </Text>
+
+        <View style={styles.langButtons}>
+
+          <Text
+            style={[
+              styles.langOption,
+              language === "es" && styles.langOptionActive,
+            ]}
+            onPress={() => changeLanguage("es")}
+          >
+            ES
+          </Text>
+
+          <Text
+            style={[
+              styles.langOption,
+              language === "en" && styles.langOptionActive,
+            ]}
+            onPress={() => changeLanguage("en")}
+          >
+            EN
+          </Text>
+
+        </View>
+
+      </View>
+
     </ScrollView>
   );
 }
 
-const styles = StyleSheet.create({
+// =========================
+// ESTILOS DINÁMICOS
+// =========================
+
+const crearEstilos = (colors: any) => StyleSheet.create({
 
   container: {
     flex: 1,
-    backgroundColor: "#f4f6f8",
+    backgroundColor: colors.background,
     padding: 20,
   },
 
   title: {
     fontSize: 28,
     fontWeight: "bold",
-    color: "#333",
+    color: colors.text,
     marginBottom: 8,
   },
 
   subtitle: {
     fontSize: 16,
-    color: "#666",
-    marginBottom: 25,
+    color: colors.textSecondary,
+    marginTop: 25,
+    marginBottom: 15,
   },
 
   label: {
     fontSize: 15,
     fontWeight: "bold",
-    color: "#333",
+    color: colors.text,
     marginBottom: 8,
   },
 
@@ -258,6 +303,35 @@ const styles = StyleSheet.create({
   buttonContainer: {
     alignItems: "center",
     marginTop: 20,
+  },
+
+  themeRow: {
+    flexDirection: "row",
+    justifyContent: "space-between",
+    alignItems: "center",
+    backgroundColor: colors.cardBackground,
+    borderWidth: 1,
+    borderColor: colors.cardBorder,
+    borderRadius: 10,
+    padding: 15,
+  },
+
+  langButtons: {
+    flexDirection: "row",
+    gap: 12,
+  },
+
+  langOption: {
+    fontSize: 14,
+    fontWeight: "bold",
+    color: colors.textSecondary,
+    paddingVertical: 4,
+    paddingHorizontal: 10,
+  },
+
+  langOptionActive: {
+    color: colors.primary,
+    textDecorationLine: "underline",
   },
 
 });

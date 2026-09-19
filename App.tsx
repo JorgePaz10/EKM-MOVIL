@@ -3,13 +3,22 @@ import { NavigationContainer } from "@react-navigation/native";
 
 import StackNavigator from "./src/navigation/StackNavigator";
 import { UserProvider } from "./src/context/UserContext";
+import { ThemeProvider } from "./src/context/ThemeContext";
+import { AuthProvider } from "./src/context/AuthContext";
+import { LanguageProvider } from "./src/context/LanguageContext";
 
 export default function App() {
   return (
-    <UserProvider>
-      <NavigationContainer>
-        <StackNavigator />
-      </NavigationContainer>
-    </UserProvider>
+    <AuthProvider>
+      <UserProvider>
+        <ThemeProvider>
+          <LanguageProvider>
+            <NavigationContainer>
+              <StackNavigator />
+            </NavigationContainer>
+          </LanguageProvider>
+        </ThemeProvider>
+      </UserProvider>
+    </AuthProvider>
   );
 }

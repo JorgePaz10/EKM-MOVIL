@@ -7,26 +7,16 @@ import {
   TouchableOpacity,
 } from "react-native";
 
+import { useTheme } from "../context/ThemeContext";
+
 export default function Clients({ navigation }: any) {
+  const { colors } = useTheme();
+  const styles = crearEstilos(colors);
+
   const clientes = [
-    {
-      id: "1",
-      nombre: "Supermercados Del Corral",
-      gateways: 3,
-      medidores: 85,
-    },
-    {
-      id: "2",
-      nombre: "Empresa ABC",
-      gateways: 2,
-      medidores: 60,
-    },
-    {
-      id: "3",
-      nombre: "Corporación XYZ",
-      gateways: 4,
-      medidores: 95,
-    },
+    { id: "1", nombre: "Supermercados Del Corral", gateways: 3, medidores: 85 },
+    { id: "2", nombre: "Empresa ABC", gateways: 2, medidores: 60 },
+    { id: "3", nombre: "Corporación XYZ", gateways: 4, medidores: 95 },
   ];
 
   return (
@@ -68,62 +58,56 @@ export default function Clients({ navigation }: any) {
   );
 }
 
-const styles = StyleSheet.create({
+const crearEstilos = (colors: any) => StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: "#f4f6f8",
+    backgroundColor: colors.background,
     padding: 20,
   },
-
   title: {
     fontSize: 28,
     fontWeight: "bold",
-    color: "#206291",
+    color: colors.primary,
     marginBottom: 5,
   },
-
   subtitle: {
     fontSize: 15,
-    color: "#666",
+    color: colors.textSecondary,
     marginBottom: 20,
   },
-
   card: {
-    backgroundColor: "#fff",
+    backgroundColor: colors.cardBackground,
+    borderWidth: 1,
+    borderColor: colors.cardBorder,
     borderRadius: 10,
     padding: 18,
     marginBottom: 15,
     elevation: 3,
   },
-
   clientName: {
     fontSize: 18,
     fontWeight: "bold",
-    color: "#333",
+    color: colors.text,
     marginBottom: 15,
   },
-
   infoRow: {
     flexDirection: "row",
     justifyContent: "space-between",
     marginBottom: 8,
   },
-
   infoLabel: {
     fontSize: 15,
-    color: "#666",
+    color: colors.textSecondary,
   },
-
   infoValue: {
     fontSize: 15,
     fontWeight: "bold",
-    color: "#206291",
+    color: colors.primary,
   },
-
   detailsText: {
     marginTop: 10,
     fontSize: 14,
     fontWeight: "bold",
-    color: "#206291",
+    color: colors.primary,
   },
 });
