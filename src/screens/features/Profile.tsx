@@ -11,20 +11,32 @@ import {
 
 import { useUser } from "../../context/UserContext";
 import { useTheme } from "../../context/ThemeContext";
+import { useAuth } from "../../context/AuthContext";
 
 export default function Profile({ navigation }: any) {
 
   const { colors } = useTheme();
   const styles = crearEstilos(colors);
 
-  // Obtener datos actualizados del usuario
-  const { nombre, telefono } = useUser();
+  // Datos del UserContext
+  const { telefono } = useUser();
 
-  const correo = "jorge@jutaru.com";
-  const rol = "Administrador";
+  // Datos reales del AuthContext / Supabase
+  const { user, logout } = useAuth();
+
+  const nombre = user?.nombre || "Usuario";
+  const correo = user?.email || "No registrado";
+  const rol = user?.role || "Usuario";
+
   const empresa = "Jutaru Control";
 
-  const cerrarSesion = () => {
+  // =========================
+  // CERRAR SESIÓN
+  // =========================
+  const cerrarSesion = async () => {
+
+    await logout();
+
     navigation.getParent()?.replace("LoginScreen");
   };
 
@@ -65,22 +77,37 @@ export default function Profile({ navigation }: any) {
 
         <View style={styles.infoRow}>
           <Text style={styles.label}>Correo</Text>
-          <Text style={styles.value}>{correo}</Text>
+
+          <Text style={styles.value}>
+            {correo}
+          </Text>
         </View>
+
 
         <View style={styles.infoRow}>
           <Text style={styles.label}>Teléfono</Text>
-          <Text style={styles.value}>{telefono || "No registrado"}</Text>
+
+          <Text style={styles.value}>
+            {telefono || "No registrado"}
+          </Text>
         </View>
+
 
         <View style={styles.infoRow}>
           <Text style={styles.label}>Rol</Text>
-          <Text style={styles.value}>{rol}</Text>
+
+          <Text style={styles.value}>
+            {rol}
+          </Text>
         </View>
+
 
         <View style={styles.infoRow}>
           <Text style={styles.label}>Empresa</Text>
-          <Text style={styles.value}>{empresa}</Text>
+
+          <Text style={styles.value}>
+            {empresa}
+          </Text>
         </View>
 
       </View>
@@ -97,7 +124,10 @@ export default function Profile({ navigation }: any) {
         <View style={styles.statusIndicator} />
 
         <View>
-          <Text style={styles.statusTitle}>Cuenta activa</Text>
+          <Text style={styles.statusTitle}>
+            Cuenta activa
+          </Text>
+
           <Text style={styles.statusText}>
             El usuario tiene acceso al sistema.
           </Text>
@@ -112,9 +142,11 @@ export default function Profile({ navigation }: any) {
         style={styles.logoutButton}
         onPress={cerrarSesion}
       >
+
         <Text style={styles.logoutText}>
           Cerrar sesión
         </Text>
+
       </TouchableOpacity>
 
     </ScrollView>

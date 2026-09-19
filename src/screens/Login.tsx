@@ -12,29 +12,43 @@ import CustomButton from "../components/CustomButton";
 import { useLanguage } from "../context/LanguageContext";
 import { translations } from "../utils/translations/translations";
 
-// AUTH CONTEXT
 import { useAuth } from "../context/AuthContext";
+
 
 export default function Login({ navigation }: any) {
 
-  // Idioma actual y textos traducidos
-  const { language, changeLanguage } = useLanguage();
-  const t = translations[language];
+  const { language, changeLanguage } =
+    useLanguage();
 
-  // AUTH CONTEXT
-  const { login, loginWithGoogle } = useAuth();
+  const t =
+    translations[language];
 
-  // Variables de estado
-  const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
 
-  // Estados para mostrar errores
-  const [emailError, setEmailError] = useState("");
-  const [passwordError, setPasswordError] = useState("");
+  const {
+    login,
+    loginWithGoogle,
+  } =
+    useAuth();
 
-  // =========================
+
+  const [email, setEmail] =
+    useState("");
+
+  const [password, setPassword] =
+    useState("");
+
+
+  const [emailError, setEmailError] =
+    useState("");
+
+  const [passwordError, setPasswordError] =
+    useState("");
+
+
+  // ========================================
   // LOGIN NORMAL
-  // =========================
+  // ========================================
+
   const handleLogin = async () => {
 
     let valid = true;
@@ -42,116 +56,153 @@ export default function Login({ navigation }: any) {
     setEmailError("");
     setPasswordError("");
 
-    // =========================
-    // VALIDAR CORREO
-    // =========================
-    if (email.trim() === "") {
 
-      setEmailError("El correo es obligatorio.");
+    // Validar correo
+    if (
+      email.trim() === ""
+    ) {
+
+      setEmailError(
+        "El correo es obligatorio."
+      );
+
       valid = false;
 
-    } else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
+    } else if (
+      !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)
+    ) {
 
-      setEmailError("El correo no es válido.");
+      setEmailError(
+        "El correo no es válido."
+      );
+
       valid = false;
-
     }
 
-    // =========================
-    // VALIDAR CONTRASEÑA
-    // =========================
-    if (password.trim() === "") {
 
-      setPasswordError("La contraseña es obligatoria.");
+    // Validar contraseña
+    if (
+      password.trim() === ""
+    ) {
+
+      setPasswordError(
+        "La contraseña es obligatoria."
+      );
+
       valid = false;
 
-    } else if (password.length < 6) {
+    } else if (
+      password.length < 6
+    ) {
 
-      setPasswordError("La contraseña es insegura.");
+      setPasswordError(
+        "La contraseña es insegura."
+      );
+
       valid = false;
-
     }
 
-    // Si hay errores de validación
+
+    // Detener si hay errores
     if (!valid) {
       return;
     }
 
-    // =========================
-    // LOGIN CON SUPABASE
-    // =========================
 
-    console.log("Intentando iniciar sesión...");
+    // Autenticar
+    const success =
+      await login(
+        email,
+        password
+      );
 
-    const success = await login(
-      email,
-      password
-    );
-
-    console.log("Resultado login:", success);
-
-    // =========================
-    // USUARIO AUTORIZADO
-    // =========================
 
     if (success) {
 
-      console.log("Usuario autorizado.");
-
-      navigation.navigate("UserTabs");
+      navigation.navigate(
+        "UserTabs"
+      );
 
     } else {
-
-      // =========================
-      // USUARIO NO AUTORIZADO
-      // =========================
 
       setPasswordError(
         "Correo, contraseña o autorización incorrectos."
       );
-
     }
   };
 
-  // =========================
-  // LOGIN CON GOOGLE
-  // =========================
-  const handleGoogleLogin = async () => {
 
-    console.log("Iniciando login con Google...");
+  // ========================================
+  // LOGIN GOOGLE
+  // ========================================
 
-    const success = await loginWithGoogle();
+  const handleGoogleLogin =
+    async () => {
 
-    console.log("Resultado Google:", success);
+    setEmailError("");
+    setPasswordError("");
+
+
+    console.log(
+      "Iniciando login con Google..."
+    );
+
+
+    const success =
+      await loginWithGoogle();
+
+
+    console.log(
+      "Resultado Google:",
+      success
+    );
+
 
     if (success) {
 
-      navigation.navigate("UserTabs");
+      navigation.navigate(
+        "UserTabs"
+      );
 
+    } else {
+
+      setPasswordError(
+        "La cuenta de Google no está autorizada."
+      );
     }
   };
 
-  return (
 
+  return (
     <View style={styles.container}>
+
+      {/* TITULO */}
 
       <Text style={styles.title}>
         Jutaru Control
       </Text>
 
+
       <Text style={styles.subtitle}>
         {t.welcomeLogin}
       </Text>
 
+
       {/* CORREO */}
 
       <CustomInput
-        onChangeText={setEmail}
+        onChangeText={(text) => {
+
+          setEmail(text);
+          setEmailError("");
+
+        }}
         value={email}
         placeholder={t.typeEmail}
         type="email"
         error={emailError !== ""}
       />
+
 
       {emailError !== "" && (
 
@@ -161,15 +212,22 @@ export default function Login({ navigation }: any) {
 
       )}
 
+
       {/* CONTRASEÑA */}
 
       <CustomInput
-        onChangeText={setPassword}
+        onChangeText={(text) => {
+
+          setPassword(text);
+          setPasswordError("");
+
+        }}
         value={password}
         placeholder={t.typePwd}
         type="password"
         error={passwordError !== ""}
       />
+
 
       {passwordError !== "" && (
 
@@ -179,6 +237,7 @@ export default function Login({ navigation }: any) {
 
       )}
 
+
       {/* LOGIN NORMAL */}
 
       <CustomButton
@@ -186,14 +245,16 @@ export default function Login({ navigation }: any) {
         onPress={handleLogin}
       />
 
-      {/* LOGIN CON GOOGLE */}
+
+      {/* LOGIN GOOGLE */}
 
       <CustomButton
         title="Continuar con Google"
         onPress={handleGoogleLogin}
       />
 
-      {/* SELECTOR DE IDIOMA */}
+
+      {/* IDIOMA */}
 
       <View style={styles.langRow}>
 
@@ -203,10 +264,13 @@ export default function Login({ navigation }: any) {
             language === "es" &&
               styles.langOptionActive,
           ]}
-          onPress={() => changeLanguage("es")}
+          onPress={() =>
+            changeLanguage("es")
+          }
         >
           ES
         </Text>
+
 
         <Text
           style={[
@@ -214,7 +278,9 @@ export default function Login({ navigation }: any) {
             language === "en" &&
               styles.langOptionActive,
           ]}
-          onPress={() => changeLanguage("en")}
+          onPress={() =>
+            changeLanguage("en")
+          }
         >
           EN
         </Text>
@@ -224,6 +290,7 @@ export default function Login({ navigation }: any) {
     </View>
   );
 }
+
 
 const styles = StyleSheet.create({
 
