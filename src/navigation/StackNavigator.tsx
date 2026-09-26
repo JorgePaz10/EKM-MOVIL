@@ -8,6 +8,7 @@ import ClientDetails from "../screens/ClientDetails";
 import GatewayDetails from "../screens/GatewayDetails";
 import MeterDetails from "../screens/MeterDetails";
 import TabsNavigator from "./TabsNavigator";
+import { useTheme } from "../context/ThemeContext";
 
 
 export type RootStackParamList = {
@@ -49,10 +50,21 @@ const Stack =
 
 export default function StackNavigator() {
 
+  const { colors } = useTheme();
+
   return (
 
     <Stack.Navigator
       initialRouteName="LoginScreen"
+      screenOptions={{
+        headerStyle: {
+          backgroundColor: colors.cardBackground,
+        },
+        headerTintColor: colors.text,
+        headerTitleStyle: {
+          color: colors.text,
+        },
+      }}
     >
 
       <Stack.Screen
