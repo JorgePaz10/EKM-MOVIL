@@ -1,5 +1,12 @@
 import React, { useState } from "react";
-import {View,Text,StyleSheet,ScrollView,Alert,Switch,} from "react-native";
+import {
+  View,
+  Text,
+  StyleSheet,
+  ScrollView,
+  Alert,
+  Switch,
+} from "react-native";
 
 import CustomInput from "../../components/CustomInput";
 import CustomButton from "../../components/CustomButton";
@@ -7,43 +14,30 @@ import CustomButton from "../../components/CustomButton";
 import { useUser } from "../../context/UserContext";
 import { useTheme } from "../../context/ThemeContext";
 import { useLanguage } from "../../context/LanguageContext";
+import { translations } from "../../utils/translations/translations";
 
 export default function Settings() {
 
-  // Tema (colores + toggle claro/oscuro)
   const { isDark, colors, toggleTheme } = useTheme();
-
-  // Idioma actual
   const { language, changeLanguage } = useLanguage();
+  const t = translations[language];
 
-  // Datos compartidos del usuario
   const { nombre, telefono, setNombre, setTelefono } = useUser();
 
-  // Estados temporales para editar
   const [nombreTemp, setNombreTemp] = useState(nombre);
   const [telefonoTemp, setTelefonoTemp] = useState(telefono);
 
   const [nombreError, setNombreError] = useState("");
   const [telefonoError, setTelefonoError] = useState("");
 
-  // =========================
-  // MANEJAR NOMBRE
-  // =========================
-
   const manejarNombre = (texto: string) => {
     setNombreTemp(texto);
-
     if (texto.trim() !== "") {
       setNombreError("");
     }
   };
 
-  // =========================
-  // MANEJAR TELÉFONO
-  // =========================
-
   const manejarTelefono = (texto: string) => {
-
     let numeros = texto.replace(/\D/g, "");
     numeros = numeros.slice(0, 8);
 
@@ -60,46 +54,31 @@ export default function Settings() {
       const cantidadNumeros = numeros.replace(/\D/g, "").length;
 
       if (cantidadNumeros < 8) {
-        setTelefonoError(
-          "El teléfono debe tener 8 números"
-        );
+        setTelefonoError(t.phoneInvalidError);
       } else {
         setTelefonoError("");
       }
     }
   };
 
-  // =========================
-  // GUARDAR CAMBIOS
-  // =========================
-
   const guardarCambios = () => {
-
     let valido = true;
 
     setNombreError("");
     setTelefonoError("");
 
     if (nombreTemp.trim() === "") {
-      setNombreError(
-        "Por favor, introduzca un nombre"
-      );
+      setNombreError(t.nameRequiredError);
       valido = false;
     }
 
-    const numerosTelefono =
-      telefonoTemp.replace(/\D/g, "");
+    const numerosTelefono = telefonoTemp.replace(/\D/g, "");
 
     if (numerosTelefono === "") {
-      setTelefonoError(
-        "El teléfono es obligatorio"
-      );
+      setTelefonoError(t.phoneRequiredError);
       valido = false;
-
     } else if (numerosTelefono.length < 8) {
-      setTelefonoError(
-        "El teléfono debe tener exactamente 8 números"
-      );
+      setTelefonoError(t.phoneInvalidError);
       valido = false;
     }
 
@@ -110,37 +89,29 @@ export default function Settings() {
     setNombre(nombreTemp);
     setTelefono(telefonoTemp);
 
-    Alert.alert(
-      "Datos guardados",
-      "La información se guardó correctamente."
-    );
+    Alert.alert(t.savedTitle, t.savedMessage);
   };
 
-  // Estilos dinámicos según el tema actual
   const styles = crearEstilos(colors);
 
   return (
     <ScrollView style={styles.container}>
 
       <Text style={styles.title}>
-        Configuración
+        {t.settingsTitle}
       </Text>
 
       <Text style={styles.subtitle}>
-        Información personal
+        {t.personalInfo}
       </Text>
 
 
-      {/* =========================
-          NOMBRE
-      ========================= */}
-
       <Text style={styles.label}>
-        Nombre
+        {t.nameLabel}
       </Text>
 
       <CustomInput
-        placeholder="Ingrese su nombre"
+        placeholder={t.namePlaceholder}
         value={nombreTemp}
         onChangeText={manejarNombre}
         type="default"
@@ -154,16 +125,12 @@ export default function Settings() {
       )}
 
 
-      {/* =========================
-          TELÉFONO
-      ========================= */}
-
       <Text style={styles.label}>
-        Teléfono
+        {t.phoneLabel}
       </Text>
 
       <CustomInput
-        placeholder="Ingrese su teléfono"
+        placeholder={t.phonePlaceholder}
         value={telefonoTemp}
         onChangeText={manejarTelefono}
         type="number"
@@ -177,33 +144,23 @@ export default function Settings() {
       )}
 
 
-      {/* =========================
-          BOTÓN GUARDAR
-      ========================= */}
-
       <View style={styles.buttonContainer}>
-
         <CustomButton
-          title="Guardar cambios"
+          title={t.saveChanges}
           onPress={guardarCambios}
           variant="primary"
         />
-
       </View>
 
 
-      {/* =========================
-          APARIENCIA
-      ========================= */}
-
       <Text style={styles.subtitle}>
-        Apariencia
+        {t.appearance}
       </Text>
 
       <View style={styles.themeRow}>
 
         <Text style={styles.label}>
-          Modo oscuro
+          {t.darkMode}
         </Text>
 
         <Switch
@@ -216,12 +173,8 @@ export default function Settings() {
       </View>
 
 
-      {/* =========================
-          IDIOMA
-      ========================= */}
-
       <Text style={styles.subtitle}>
-        Idioma
+        {t.language}
       </Text>
 
       <View style={styles.themeRow}>
@@ -259,10 +212,6 @@ export default function Settings() {
     </ScrollView>
   );
 }
-
-// =========================
-// ESTILOS DINÁMICOS
-// =========================
 
 const crearEstilos = (colors: any) => StyleSheet.create({
 

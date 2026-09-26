@@ -12,6 +12,8 @@ import GatewayCard from "../components/GatewayCard";
 import MeterCard from "../components/MeterCard";
 import StatusBadge from "../components/StatusBadge";
 import { useTheme } from "../context/ThemeContext";
+import { useLanguage } from "../context/LanguageContext";
+import { translations } from "../utils/translations/translations";
 import { useAutoRefresh } from "../hooks/useAutoRefresh";
 
 import {
@@ -21,6 +23,8 @@ import {
 
 export default function GatewayDetails({ route, navigation }: any) {
   const { colors } = useTheme();
+  const { language } = useLanguage();
+  const t = translations[language];
   const styles = crearEstilos(colors);
 
   const { gatewayId } = route.params;
@@ -95,7 +99,7 @@ export default function GatewayDetails({ route, navigation }: any) {
           color={colors.primary}
         />
         <Text style={styles.loadingText}>
-          Cargando gateway...
+          {t.loadingGateway}
         </Text>
       </View>
     );
@@ -105,7 +109,7 @@ export default function GatewayDetails({ route, navigation }: any) {
     return (
       <View style={styles.loadingContainer}>
         <Text style={styles.title}>
-          Gateway no encontrado
+          {t.gatewayNotFound}
         </Text>
       </View>
     );
@@ -132,7 +136,7 @@ export default function GatewayDetails({ route, navigation }: any) {
       </Text>
 
       <Text style={styles.subtitle}>
-        Información del gateway
+        {t.gatewayInfo}
       </Text>
 
 
@@ -146,19 +150,19 @@ export default function GatewayDetails({ route, navigation }: any) {
       <View style={styles.infoCard}>
 
         <View style={styles.infoRow}>
-          <Text style={styles.infoLabel}>Cliente</Text>
+          <Text style={styles.infoLabel}>{t.cliente}</Text>
           <Text style={styles.infoValue}>{gateway.cliente}</Text>
         </View>
 
         <View style={styles.infoRow}>
-          <Text style={styles.infoLabel}>Estado</Text>
+          <Text style={styles.infoLabel}>{t.estado}</Text>
           <StatusBadge status={gatewayStatus} />
         </View>
 
         <View style={styles.infoRow}>
-          <Text style={styles.infoLabel}>Gateway activo</Text>
+          <Text style={styles.infoLabel}>{t.gatewayActive}</Text>
           <Text style={styles.infoValue}>
-            {gateway.activo ? "Sí" : "No"}
+            {gateway.activo ? t.si : t.no}
           </Text>
         </View>
 
@@ -166,12 +170,12 @@ export default function GatewayDetails({ route, navigation }: any) {
 
 
       <Text style={styles.sectionTitle}>
-        Medidores ({medidores.length})
+        {t.metersCountLabel.replace("{count}", String(medidores.length))}
       </Text>
 
       {medidores.length === 0 && (
         <Text style={styles.subtitle}>
-          Este gateway no reportó medidores.
+          {t.noMetersReported}
         </Text>
       )}
 

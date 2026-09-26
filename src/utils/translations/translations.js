@@ -1,14 +1,250 @@
-export const translations= {
+export const translations = {
     en: {
+        // Login
         welcomeLogin: "Welcome to Login Screen",
         typeEmail: "Type your email adress",
         typePwd: "Type yout password",
-        signIn: "Sign In"
+        signIn: "Sign In",
+        continueWithGoogle: "Continue with Google",
+        emailRequiredError: "Email is required.",
+        emailInvalidError: "Email is not valid.",
+        passwordRequiredError: "Password is required.",
+        passwordWeakError: "Password is insecure.",
+        loginErrorMessage: "Incorrect email, password, or unauthorized account.",
+        googleLoginErrorMessage: "This Google account is not authorized.",
+
+        // Settings
+        settingsTitle: "Settings",
+        personalInfo: "Personal information",
+        nameLabel: "Name",
+        namePlaceholder: "Enter your name",
+        phoneLabel: "Phone",
+        phonePlaceholder: "Enter your phone number",
+        saveChanges: "Save changes",
+        savedTitle: "Data saved",
+        savedMessage: "Your information was saved correctly.",
+        nameRequiredError: "Please enter a name",
+        phoneRequiredError: "Phone number is required",
+        phoneInvalidError: "Phone number must have exactly 8 digits",
+        appearance: "Appearance",
+        darkMode: "Dark mode",
+        language: "Language",
+
+        // Common / shared labels
+        cliente: "Client",
+        gateway: "Gateway",
+        gateways: "Gateways",
+        medidores: "Meters",
+        estado: "Status",
+        si: "Yes",
+        no: "No",
+        verDetalles: "View details →",
+        verGateway: "View gateway →",
+        verMedidor: "View meter →",
+        online: "Online",
+        offline: "Offline",
+
+        // Home
+        homeSubtitle: "EKM systems monitoring",
+        generalSummary: "General summary",
+        meterStatus: "Meter status",
+        incidents: "Incidents",
+        attentionRequired: "Attention required",
+        offlineMetersMsg: "There are {offline} meters offline{gatewaysMsg}.",
+        offlineGatewaysMsg: " and {count} gateway(s) disconnected",
+        loadingSummary: "Loading summary...",
+
+        // Clients
+        clientsTitle: "Clients",
+        clientsSubtitle: "Companies managed in Jutaru Control",
+        loadingClients: "Loading clients...",
+
+        // ClientDetails
+        clientGeneralInfo: "General client information",
+        loadingClient: "Loading client...",
+
+        // Alerts
+        alertsTitle: "Alerts",
+        alertsSubtitle: "Incidents that require attention",
+        activeAlerts: "Active alerts",
+        gatewayOfflineTitle: "Gateway offline",
+        gatewayOfflineMsg: "Gateway {nombre} is not available.",
+        meterOfflineTitle: "Meter offline",
+        meterOfflineMsg: "Meter {nombre} is not reporting information.",
+        noAlertsTitle: "No alerts",
+        noAlertsMsg: "All systems are working correctly.",
+        loadingAlerts: "Loading alerts...",
+
+        // GatewayDetails
+        gatewayInfo: "Gateway information",
+        gatewayActive: "Gateway active",
+        noMetersReported: "This gateway did not report any meters.",
+        loadingGateway: "Loading gateway...",
+        gatewayNotFound: "Gateway not found",
+
+        // MeterDetails
+        meterInfo: "Meter information",
+        currentStatus: "Current status",
+        currentReading: "Current reading",
+        deviceInfo: "Device information",
+        deviceType: "Device type",
+        protocol: "Protocol",
+        lastDate: "Last date",
+        lastTime: "Last time",
+        notAvailable: "N/A",
+        readingQuality: "Reading quality",
+        readAttempts: "Read attempts",
+        goodReadsRatio: "Good reads %",
+        waterPulses: "Water pulses",
+        monitoring: "Monitoring",
+        communicationStatus: "Communication status",
+        meterOnlineMsg: "The meter is reporting information correctly.",
+        meterOfflineMsgDetail: "The meter is not reporting information at this time.",
+
+        // Profile
+        userInfo: "User information",
+        correo: "Email",
+        telefono: "Phone",
+        rol: "Role",
+        empresa: "Company",
+        notRegistered: "Not registered",
+        accountStatus: "Account status",
+        activeAccount: "Active account",
+        activeAccountMsg: "The user has access to the system.",
+        logout: "Log out",
+
+        //Meter
+        mac: "MAC",
+        metersCountLabel: "Meters ({count})",
+        tabHome: "Home",
+        tabClients: "Clients",
+        tabAlerts: "Alerts",
+        tabProfile: "Profile",
+        tabSettings: "Settings",
+        defaultUser: "User",
     },
     es: {
+        // Login
         welcomeLogin: "Bienvenido a Login",
         typeEmail: "Ingrese su correo",
         typePwd: "Ingrese su contraseña",
-        signIn: "Iniciar Sesion"
+        signIn: "Iniciar Sesion",
+        continueWithGoogle: "Continuar con Google",
+        emailRequiredError: "El correo es obligatorio.",
+        emailInvalidError: "El correo no es válido.",
+        passwordRequiredError: "La contraseña es obligatoria.",
+        passwordWeakError: "La contraseña es insegura.",
+        loginErrorMessage: "Correo, contraseña o autorización incorrectos.",
+        googleLoginErrorMessage: "La cuenta de Google no está autorizada.",
+
+        // Settings
+        settingsTitle: "Configuración",
+        personalInfo: "Información personal",
+        nameLabel: "Nombre",
+        namePlaceholder: "Ingrese su nombre",
+        phoneLabel: "Teléfono",
+        phonePlaceholder: "Ingrese su teléfono",
+        saveChanges: "Guardar cambios",
+        savedTitle: "Datos guardados",
+        savedMessage: "La información se guardó correctamente.",
+        nameRequiredError: "Por favor, introduzca un nombre",
+        phoneRequiredError: "El teléfono es obligatorio",
+        phoneInvalidError: "El teléfono debe tener exactamente 8 números",
+        appearance: "Apariencia",
+        darkMode: "Modo oscuro",
+        language: "Idioma",
+
+        // Common / shared labels
+        cliente: "Cliente",
+        gateway: "Gateway",
+        gateways: "Gateways",
+        medidores: "Medidores",
+        estado: "Estado",
+        si: "Sí",
+        no: "No",
+        verDetalles: "Ver detalles →",
+        verGateway: "Ver gateway →",
+        verMedidor: "Ver medidor →",
+        online: "Online",
+        offline: "Offline",
+
+        // Home
+        homeSubtitle: "Monitoreo de sistemas EKM",
+        generalSummary: "Resumen general",
+        meterStatus: "Estado de medidores",
+        incidents: "Incidencias",
+        attentionRequired: "Atención requerida",
+        offlineMetersMsg: "Hay {offline} medidores offline{gatewaysMsg}.",
+        offlineGatewaysMsg: " y {count} gateway(s) sin conexión",
+        loadingSummary: "Cargando resumen...",
+
+        // Clients
+        clientsTitle: "Clientes",
+        clientsSubtitle: "Empresas administradas en Jutaru Control",
+        loadingClients: "Cargando clientes...",
+
+        // ClientDetails
+        clientGeneralInfo: "Información general del cliente",
+        loadingClient: "Cargando cliente...",
+
+        // Alerts
+        alertsTitle: "Alertas",
+        alertsSubtitle: "Incidencias que requieren atención",
+        activeAlerts: "Alertas activas",
+        gatewayOfflineTitle: "Gateway offline",
+        gatewayOfflineMsg: "El gateway {nombre} no está disponible.",
+        meterOfflineTitle: "Medidor offline",
+        meterOfflineMsg: "El medidor {nombre} no está reportando información.",
+        noAlertsTitle: "Sin alertas",
+        noAlertsMsg: "Todos los sistemas se encuentran funcionando correctamente.",
+        loadingAlerts: "Cargando alertas...",
+
+        // GatewayDetails
+        gatewayInfo: "Información del gateway",
+        gatewayActive: "Gateway activo",
+        noMetersReported: "Este gateway no reportó medidores.",
+        loadingGateway: "Cargando gateway...",
+        gatewayNotFound: "Gateway no encontrado",
+
+        // MeterDetails
+        meterInfo: "Información del medidor",
+        currentStatus: "Estado actual",
+        currentReading: "Lectura actual",
+        deviceInfo: "Información del dispositivo",
+        deviceType: "Tipo de dispositivo",
+        protocol: "Protocolo",
+        lastDate: "Última fecha",
+        lastTime: "Última hora",
+        notAvailable: "N/D",
+        readingQuality: "Calidad de lectura",
+        readAttempts: "Intentos de lectura",
+        goodReadsRatio: "% de lecturas buenas",
+        waterPulses: "Pulsos (agua)",
+        monitoring: "Monitoreo",
+        communicationStatus: "Estado de comunicación",
+        meterOnlineMsg: "El medidor está reportando información correctamente.",
+        meterOfflineMsgDetail: "El medidor no está reportando información actualmente.",
+
+        // Profile
+        userInfo: "Información de usuario",
+        correo: "Correo",
+        telefono: "Teléfono",
+        rol: "Rol",
+        empresa: "Empresa",
+        notRegistered: "No registrado",
+        accountStatus: "Estado de cuenta",
+        activeAccount: "Cuenta activa",
+        activeAccountMsg: "El usuario tiene acceso al sistema.",
+        logout: "Cerrar sesión",
+
+        //Medidores:
+        mac: "MAC",
+        metersCountLabel: "Medidores ({count})",
+        tabHome: "Home",
+        tabClients: "Clientes",
+        tabAlerts: "Alertas",
+        tabProfile: "Perfil",
+        tabSettings: "Configuración",
+        defaultUser: "Usuario",
     }
 }

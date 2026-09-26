@@ -9,11 +9,15 @@ import {
 } from "react-native";
 
 import { useTheme } from "../context/ThemeContext";
+import { useLanguage } from "../context/LanguageContext";
+import { translations } from "../utils/translations/translations";
 import { getResumenCompleto } from "../services/ekmService";
 import { useAutoRefresh } from "../hooks/useAutoRefresh";
 
 export default function Home() {
   const { colors } = useTheme();
+  const { language } = useLanguage();
+  const t = translations[language];
   const styles = crearEstilos(colors);
 
   const [loading, setLoading] = useState(true);
@@ -76,10 +80,19 @@ export default function Home() {
     return (
       <View style={styles.loadingContainer}>
         <ActivityIndicator size="large" color={colors.primary} />
-        <Text style={styles.loadingText}>Cargando resumen...</Text>
+        <Text style={styles.loadingText}>{t.loadingSummary}</Text>
       </View>
     );
   }
+
+  const gatewaysMsg =
+    resumen.gatewaysOffline > 0
+      ? t.offlineGatewaysMsg.replace("{count}", String(resumen.gatewaysOffline))
+      : "";
+
+  const alertText = t.offlineMetersMsg
+    .replace("{offline}", String(resumen.medidoresOffline))
+    .replace("{gatewaysMsg}", gatewaysMsg);
 
   return (
     <ScrollView
@@ -95,35 +108,35 @@ export default function Home() {
       <View style={styles.header}>
         <Text style={styles.title}>Jutaru Control</Text>
         <Text style={styles.subtitle}>
-          Monitoreo de sistemas EKM
+          {t.homeSubtitle}
         </Text>
       </View>
 
-      <Text style={styles.sectionTitle}>Resumen general</Text>
+      <Text style={styles.sectionTitle}>{t.generalSummary}</Text>
 
       <View style={styles.cardsContainer}>
         <View style={styles.card}>
-          <Text style={styles.cardTitle}>Clientes</Text>
+          <Text style={styles.cardTitle}>{t.cliente}</Text>
           <Text style={styles.cardValue}>{resumen.clientes}</Text>
         </View>
 
         <View style={styles.card}>
-          <Text style={styles.cardTitle}>Gateways</Text>
+          <Text style={styles.cardTitle}>{t.gateways}</Text>
           <Text style={styles.cardValue}>{resumen.gateways}</Text>
         </View>
 
         <View style={styles.card}>
-          <Text style={styles.cardTitle}>Medidores</Text>
+          <Text style={styles.cardTitle}>{t.medidores}</Text>
           <Text style={styles.cardValue}>{resumen.medidores}</Text>
         </View>
       </View>
 
-      <Text style={styles.sectionTitle}>Estado de medidores</Text>
+      <Text style={styles.sectionTitle}>{t.meterStatus}</Text>
 
       <View style={styles.statusCard}>
         <View style={styles.statusRow}>
           <View style={styles.statusIndicatorOnline} />
-          <Text style={styles.statusText}>Online</Text>
+          <Text style={styles.statusText}>{t.online}</Text>
           <Text style={styles.statusValue}>
             {resumen.medidoresOnline}
           </Text>
@@ -131,23 +144,19 @@ export default function Home() {
 
         <View style={styles.statusRow}>
           <View style={styles.statusIndicatorOffline} />
-          <Text style={styles.statusText}>Offline</Text>
+          <Text style={styles.statusText}>{t.offline}</Text>
           <Text style={styles.statusValue}>
             {resumen.medidoresOffline}
           </Text>
         </View>
       </View>
 
-      <Text style={styles.sectionTitle}>Incidencias</Text>
+      <Text style={styles.sectionTitle}>{t.incidents}</Text>
 
       <View style={styles.alertCard}>
-        <Text style={styles.alertTitle}>Atención requerida</Text>
+        <Text style={styles.alertTitle}>{t.attentionRequired}</Text>
         <Text style={styles.alertText}>
-          Hay {resumen.medidoresOffline} medidores offline
-          {resumen.gatewaysOffline > 0
-            ? ` y ${resumen.gatewaysOffline} gateway(s) sin conexión`
-            : ""}
-          .
+          {alertText}
         </Text>
       </View>
     </ScrollView>

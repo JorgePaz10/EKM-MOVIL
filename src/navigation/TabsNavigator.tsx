@@ -9,6 +9,8 @@ import Profile from "../screens/features/Profile";
 import Settings from "../screens/features/Settings";
 
 import { useTheme } from "../context/ThemeContext";
+import { useLanguage } from "../context/LanguageContext";
+import { translations } from "../utils/translations/translations";
 
 export type TabsParamList = {
   Home: undefined;
@@ -22,31 +24,27 @@ const Tab = createBottomTabNavigator<TabsParamList>();
 
 export default function TabsNavigator() {
 
-  const { colors, isDark } = useTheme();
+  const { colors } = useTheme();
+  const { language } = useLanguage();
+  const t = translations[language];
 
   return (
     <Tab.Navigator
       screenOptions={({ route }) => ({
         headerShown: true,
 
-        // Color del icono seleccionado
         tabBarActiveTintColor: colors.primary,
-
-        // Color de los iconos no seleccionados
         tabBarInactiveTintColor: colors.textSecondary,
 
-        // Fondo de la barra inferior
         tabBarStyle: {
           backgroundColor: colors.background,
           borderTopColor: colors.border,
         },
 
-        // Color del texto de las pestañas
         tabBarLabelStyle: {
           color: colors.text,
         },
 
-        // Fondo y texto del encabezado
         headerStyle: {
           backgroundColor: colors.background,
         },
@@ -83,31 +81,31 @@ export default function TabsNavigator() {
       <Tab.Screen
         name="Home"
         component={Dashboard}
-        options={{ title: "Home" }}
+        options={{ title: t.tabHome }}
       />
 
       <Tab.Screen
         name="Clients"
         component={Clients}
-        options={{ title: "Clientes" }}
+        options={{ title: t.tabClients }}
       />
 
       <Tab.Screen
         name="Alerts"
         component={Alerts}
-        options={{ title: "Alertas" }}
+        options={{ title: t.tabAlerts }}
       />
 
       <Tab.Screen
         name="Profile"
         component={Profile}
-        options={{ title: "Perfil" }}
+        options={{ title: t.tabProfile }}
       />
 
       <Tab.Screen
         name="Settings"
         component={Settings}
-        options={{ title: "Configuracion" }}
+        options={{ title: t.tabSettings }}
       />
 
     </Tab.Navigator>

@@ -62,9 +62,7 @@ export default function Login({ navigation }: any) {
       email.trim() === ""
     ) {
 
-      setEmailError(
-        "El correo es obligatorio."
-      );
+      setEmailError(t.emailRequiredError);
 
       valid = false;
 
@@ -72,9 +70,7 @@ export default function Login({ navigation }: any) {
       !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)
     ) {
 
-      setEmailError(
-        "El correo no es válido."
-      );
+      setEmailError(t.emailInvalidError);
 
       valid = false;
     }
@@ -85,9 +81,7 @@ export default function Login({ navigation }: any) {
       password.trim() === ""
     ) {
 
-      setPasswordError(
-        "La contraseña es obligatoria."
-      );
+      setPasswordError(t.passwordRequiredError);
 
       valid = false;
 
@@ -95,9 +89,7 @@ export default function Login({ navigation }: any) {
       password.length < 6
     ) {
 
-      setPasswordError(
-        "La contraseña es insegura."
-      );
+      setPasswordError(t.passwordWeakError);
 
       valid = false;
     }
@@ -125,9 +117,7 @@ export default function Login({ navigation }: any) {
 
     } else {
 
-      setPasswordError(
-        "Correo, contraseña o autorización incorrectos."
-      );
+      setPasswordError(t.loginErrorMessage);
     }
   };
 
@@ -166,9 +156,7 @@ export default function Login({ navigation }: any) {
 
     } else {
 
-      setPasswordError(
-        "La cuenta de Google no está autorizada."
-      );
+      setPasswordError(t.googleLoginErrorMessage);
     }
   };
 
@@ -249,7 +237,7 @@ export default function Login({ navigation }: any) {
       {/* LOGIN GOOGLE */}
 
       <CustomButton
-        title="Continuar con Google"
+        title={t.continueWithGoogle}
         onPress={handleGoogleLogin}
       />
 

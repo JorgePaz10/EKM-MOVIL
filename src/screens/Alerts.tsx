@@ -11,11 +11,15 @@ import {
 
 import StatusBadge from "../components/StatusBadge";
 import { useTheme } from "../context/ThemeContext";
+import { useLanguage } from "../context/LanguageContext";
+import { translations } from "../utils/translations/translations";
 import { getResumenCompleto } from "../services/ekmService";
 import { useAutoRefresh } from "../hooks/useAutoRefresh";
 
 export default function Alerts({ navigation }: any) {
   const { colors } = useTheme();
+  const { language } = useLanguage();
+  const t = translations[language];
   const styles = crearEstilos(colors);
 
   const [loading, setLoading] = useState(true);
@@ -32,8 +36,8 @@ export default function Alerts({ navigation }: any) {
           alertasGeneradas.push({
             id: `gw-${gateway.id}`,
             tipo: "offline",
-            titulo: "Gateway offline",
-            mensaje: `El gateway ${gateway.nombre} no está disponible.`,
+            titulo: t.gatewayOfflineTitle,
+            mensaje: t.gatewayOfflineMsg.replace("{nombre}", gateway.nombre),
             cliente: gateway.cliente,
             gateway: gateway.nombre,
             gatewayId: gateway.id,
@@ -45,8 +49,8 @@ export default function Alerts({ navigation }: any) {
             alertasGeneradas.push({
               id: `mt-${medidor.id}`,
               tipo: "offline",
-              titulo: "Medidor offline",
-              mensaje: `El medidor ${medidor.nombre} no está reportando información.`,
+              titulo: t.meterOfflineTitle,
+              mensaje: t.meterOfflineMsg.replace("{nombre}", medidor.nombre),
               cliente: gateway.cliente,
               gateway: gateway.nombre,
               gatewayId: gateway.id,
@@ -63,7 +67,7 @@ export default function Alerts({ navigation }: any) {
     } finally {
       setLoading(false);
     }
-  }, []);
+  }, [t]);
 
   const { refreshing, onRefresh } = useAutoRefresh(cargarAlertas, 5 * 60 * 1000);
 
@@ -71,7 +75,7 @@ export default function Alerts({ navigation }: any) {
     return (
       <View style={styles.loadingContainer}>
         <ActivityIndicator size="large" color={colors.primary} />
-        <Text style={styles.loadingText}>Cargando alertas...</Text>
+        <Text style={styles.loadingText}>{t.loadingAlerts}</Text>
       </View>
     );
   }
@@ -87,15 +91,15 @@ export default function Alerts({ navigation }: any) {
         />
       }
     >
-      <Text style={styles.title}>Alertas</Text>
+      <Text style={styles.title}>{t.alertsTitle}</Text>
 
       <Text style={styles.subtitle}>
-        Incidencias que requieren atención
+        {t.alertsSubtitle}
       </Text>
 
       <View style={styles.summaryCard}>
         <Text style={styles.summaryTitle}>
-          Alertas activas
+          {t.activeAlerts}
         </Text>
         <Text style={styles.summaryValue}>
           {alertas.length}
@@ -125,15 +129,15 @@ export default function Alerts({ navigation }: any) {
 
           <View style={styles.infoContainer}>
             <Text style={styles.infoText}>
-              Cliente: {alerta.cliente}
+              {t.cliente}: {alerta.cliente}
             </Text>
             <Text style={styles.infoText}>
-              Gateway: {alerta.gateway}
+              {t.gateway}: {alerta.gateway}
             </Text>
           </View>
 
           <Text style={styles.detailsText}>
-            Ver detalle →
+            {t.verDetalles}
           </Text>
         </TouchableOpacity>
       ))}
@@ -141,10 +145,10 @@ export default function Alerts({ navigation }: any) {
       {alertas.length === 0 && (
         <View style={styles.emptyCard}>
           <Text style={styles.emptyTitle}>
-            Sin alertas
+            {t.noAlertsTitle}
           </Text>
           <Text style={styles.emptyText}>
-            Todos los sistemas se encuentran funcionando correctamente.
+            {t.noAlertsMsg}
           </Text>
         </View>
       )}

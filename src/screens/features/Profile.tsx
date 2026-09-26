@@ -12,48 +12,41 @@ import {
 import { useUser } from "../../context/UserContext";
 import { useTheme } from "../../context/ThemeContext";
 import { useAuth } from "../../context/AuthContext";
+import { useLanguage } from "../../context/LanguageContext";
+import { translations } from "../../utils/translations/translations";
 
 export default function Profile({ navigation }: any) {
 
   const { colors } = useTheme();
+  const { language } = useLanguage();
+  const t = translations[language];
   const styles = crearEstilos(colors);
 
-  // Datos del UserContext
   const { telefono } = useUser();
 
-  // Datos reales del AuthContext / Supabase
   const { user, logout } = useAuth();
 
-  const nombre = user?.nombre || "Usuario";
-  const correo = user?.email || "No registrado";
-  const rol = user?.role || "Usuario";
+  const nombre = user?.nombre || t.defaultUser;
+  const correo = user?.email || t.notRegistered;
+  const rol = user?.role || t.defaultUser;
 
   const empresa = "Jutaru Control";
 
-  // =========================
-  // CERRAR SESIÓN
-  // =========================
   const cerrarSesion = async () => {
-
     await logout();
-
     navigation.getParent()?.replace("LoginScreen");
   };
 
   return (
     <ScrollView style={styles.container}>
 
-      {/* Encabezado */}
-
       <View style={styles.header}>
 
         <View style={styles.avatar}>
-
           <Image
-            source={require("../../../assets/images/FotoDePefilJP.jpeg")}
+            source={require("../../../assets/images/logojutraru.png")}
             style={styles.profileImage}
           />
-
         </View>
 
         <Text style={styles.name}>
@@ -67,56 +60,39 @@ export default function Profile({ navigation }: any) {
       </View>
 
 
-      {/* Información */}
-
       <Text style={styles.sectionTitle}>
-        Información de usuario
+        {t.userInfo}
       </Text>
 
       <View style={styles.card}>
 
         <View style={styles.infoRow}>
-          <Text style={styles.label}>Correo</Text>
+          <Text style={styles.label}>{t.correo}</Text>
+          <Text style={styles.value}>{correo}</Text>
+        </View>
 
+        <View style={styles.infoRow}>
+          <Text style={styles.label}>{t.telefono}</Text>
           <Text style={styles.value}>
-            {correo}
+            {telefono || t.notRegistered}
           </Text>
         </View>
 
-
         <View style={styles.infoRow}>
-          <Text style={styles.label}>Teléfono</Text>
-
-          <Text style={styles.value}>
-            {telefono || "No registrado"}
-          </Text>
+          <Text style={styles.label}>{t.rol}</Text>
+          <Text style={styles.value}>{rol}</Text>
         </View>
 
-
         <View style={styles.infoRow}>
-          <Text style={styles.label}>Rol</Text>
-
-          <Text style={styles.value}>
-            {rol}
-          </Text>
-        </View>
-
-
-        <View style={styles.infoRow}>
-          <Text style={styles.label}>Empresa</Text>
-
-          <Text style={styles.value}>
-            {empresa}
-          </Text>
+          <Text style={styles.label}>{t.empresa}</Text>
+          <Text style={styles.value}>{empresa}</Text>
         </View>
 
       </View>
 
 
-      {/* Estado */}
-
       <Text style={styles.sectionTitle}>
-        Estado de cuenta
+        {t.accountStatus}
       </Text>
 
       <View style={styles.statusCard}>
@@ -125,28 +101,24 @@ export default function Profile({ navigation }: any) {
 
         <View>
           <Text style={styles.statusTitle}>
-            Cuenta activa
+            {t.activeAccount}
           </Text>
 
           <Text style={styles.statusText}>
-            El usuario tiene acceso al sistema.
+            {t.activeAccountMsg}
           </Text>
         </View>
 
       </View>
 
 
-      {/* Cerrar sesión */}
-
       <TouchableOpacity
         style={styles.logoutButton}
         onPress={cerrarSesion}
       >
-
         <Text style={styles.logoutText}>
-          Cerrar sesión
+          {t.logout}
         </Text>
-
       </TouchableOpacity>
 
     </ScrollView>

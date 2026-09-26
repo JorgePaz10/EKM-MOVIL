@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useCallback, useState } from "react";
 import {
   View,
   Text,
@@ -6,13 +6,19 @@ import {
   ScrollView,
   TouchableOpacity,
   ActivityIndicator,
+  RefreshControl,
 } from "react-native";
 
 import { useTheme } from "../context/ThemeContext";
+import { useLanguage } from "../context/LanguageContext";
+import { translations } from "../utils/translations/translations";
 import { getResumenCompleto } from "../services/ekmService";
+import { useAutoRefresh } from "../hooks/useAutoRefresh";
 
 export default function ClientDetails({ route, navigation }: any) {
   const { colors } = useTheme();
+  const { language } = useLanguage();
+  const t = translations[language];
   const styles = crearEstilos(colors);
 
   const { clientName } = route.params;
@@ -20,32 +26,30 @@ export default function ClientDetails({ route, navigation }: any) {
   const [loading, setLoading] = useState(true);
   const [gateways, setGateways] = useState<any[]>([]);
 
-  useEffect(() => {
-    const cargarCliente = async () => {
-      try {
-        const gatewaysConMedidores = await getResumenCompleto();
+  const cargarCliente = useCallback(async () => {
+    try {
+      const gatewaysConMedidores = await getResumenCompleto();
 
-        const gatewaysDelCliente = gatewaysConMedidores.filter(
-          (g: any) => g.cliente === clientName
-        );
+      const gatewaysDelCliente = gatewaysConMedidores.filter(
+        (g: any) => g.cliente === clientName
+      );
 
-        setGateways(gatewaysDelCliente);
+      setGateways(gatewaysDelCliente);
 
-      } catch (error) {
-        console.log("Error cargando cliente:", error);
-      } finally {
-        setLoading(false);
-      }
-    };
-
-    cargarCliente();
+    } catch (error) {
+      console.log("Error cargando cliente:", error);
+    } finally {
+      setLoading(false);
+    }
   }, [clientName]);
+
+  const { refreshing, onRefresh } = useAutoRefresh(cargarCliente, 5 * 60 * 1000);
 
   if (loading) {
     return (
       <View style={styles.loadingContainer}>
         <ActivityIndicator size="large" color={colors.primary} />
-        <Text style={styles.loadingText}>Cargando cliente...</Text>
+        <Text style={styles.loadingText}>{t.loadingClient}</Text>
       </View>
     );
   }
@@ -56,27 +60,36 @@ export default function ClientDetails({ route, navigation }: any) {
   );
 
   return (
-    <ScrollView style={styles.container}>
+    <ScrollView
+      style={styles.container}
+      refreshControl={
+        <RefreshControl
+          refreshing={refreshing}
+          onRefresh={onRefresh}
+          tintColor={colors.primary}
+        />
+      }
+    >
       <Text style={styles.title}>{clientName}</Text>
 
       <Text style={styles.subtitle}>
-        Información general del cliente
+        {t.clientGeneralInfo}
       </Text>
 
       <View style={styles.summaryCard}>
         <View style={styles.summaryItem}>
-          <Text style={styles.summaryLabel}>Gateways</Text>
+          <Text style={styles.summaryLabel}>{t.gateways}</Text>
           <Text style={styles.summaryValue}>{gateways.length}</Text>
         </View>
 
         <View style={styles.summaryItem}>
-          <Text style={styles.summaryLabel}>Medidores</Text>
+          <Text style={styles.summaryLabel}>{t.medidores}</Text>
           <Text style={styles.summaryValue}>{totalMedidores}</Text>
         </View>
       </View>
 
       <Text style={styles.sectionTitle}>
-        Gateways
+        {t.gateways}
       </Text>
 
       {gateways.map((gateway) => (
@@ -94,7 +107,7 @@ export default function ClientDetails({ route, navigation }: any) {
           </Text>
 
           <Text style={styles.gatewayInfo}>
-            Medidores: {gateway.medidores.length}
+            {t.medidores}: {gateway.medidores.length}
           </Text>
 
           <Text
@@ -105,11 +118,11 @@ export default function ClientDetails({ route, navigation }: any) {
                 : styles.offline,
             ]}
           >
-            ● {gateway.activo && !gateway.errorConexion ? "Online" : "Offline"}
+            ● {gateway.activo && !gateway.errorConexion ? t.online : t.offline}
           </Text>
 
           <Text style={styles.detailsText}>
-            Ver gateway →
+            {t.verGateway}
           </Text>
         </TouchableOpacity>
       ))}

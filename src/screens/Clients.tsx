@@ -10,11 +10,15 @@ import {
 } from "react-native";
 
 import { useTheme } from "../context/ThemeContext";
+import { useLanguage } from "../context/LanguageContext";
+import { translations } from "../utils/translations/translations";
 import { getResumenCompleto } from "../services/ekmService";
 import { useAutoRefresh } from "../hooks/useAutoRefresh";
 
 export default function Clients({ navigation }: any) {
   const { colors } = useTheme();
+  const { language } = useLanguage();
+  const t = translations[language];
   const styles = crearEstilos(colors);
 
   const [loading, setLoading] = useState(true);
@@ -53,7 +57,7 @@ export default function Clients({ navigation }: any) {
     return (
       <View style={styles.loadingContainer}>
         <ActivityIndicator size="large" color={colors.primary} />
-        <Text style={styles.loadingText}>Cargando clientes...</Text>
+        <Text style={styles.loadingText}>{t.loadingClients}</Text>
       </View>
     );
   }
@@ -69,10 +73,10 @@ export default function Clients({ navigation }: any) {
         />
       }
     >
-      <Text style={styles.title}>Clientes</Text>
+      <Text style={styles.title}>{t.clientsTitle}</Text>
 
       <Text style={styles.subtitle}>
-        Empresas administradas en Jutaru Control
+        {t.clientsSubtitle}
       </Text>
 
       {clientes.map((cliente) => (
@@ -88,17 +92,17 @@ export default function Clients({ navigation }: any) {
           <Text style={styles.clientName}>{cliente.nombre}</Text>
 
           <View style={styles.infoRow}>
-            <Text style={styles.infoLabel}>Gateways</Text>
+            <Text style={styles.infoLabel}>{t.gateways}</Text>
             <Text style={styles.infoValue}>{cliente.gateways}</Text>
           </View>
 
           <View style={styles.infoRow}>
-            <Text style={styles.infoLabel}>Medidores</Text>
+            <Text style={styles.infoLabel}>{t.medidores}</Text>
             <Text style={styles.infoValue}>{cliente.medidores}</Text>
           </View>
 
           <Text style={styles.detailsText}>
-            Ver detalles →
+            {t.verDetalles}
           </Text>
         </TouchableOpacity>
       ))}

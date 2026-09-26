@@ -8,9 +8,13 @@ import {
 
 import StatusBadge from "../components/StatusBadge";
 import { useTheme } from "../context/ThemeContext";
+import { useLanguage } from "../context/LanguageContext";
+import { translations } from "../utils/translations/translations";
 
 export default function MeterDetails({ route }: any) {
   const { colors } = useTheme();
+  const { language } = useLanguage();
+  const t = translations[language];
   const styles = crearEstilos(colors);
 
   const {
@@ -38,19 +42,19 @@ export default function MeterDetails({ route }: any) {
       </Text>
 
       <Text style={styles.subtitle}>
-        Información del medidor
+        {t.meterInfo}
       </Text>
 
       <View style={styles.statusCard}>
         <Text style={styles.statusLabel}>
-          Estado actual
+          {t.currentStatus}
         </Text>
         <StatusBadge status={meterStatus} />
       </View>
 
       <View style={styles.readingCard}>
         <Text style={styles.readingLabel}>
-          Lectura actual
+          {t.currentReading}
         </Text>
         <Text style={styles.reading}>
           {lectura} kWh
@@ -58,71 +62,71 @@ export default function MeterDetails({ route }: any) {
       </View>
 
       <Text style={styles.sectionTitle}>
-        Información del dispositivo
+        {t.deviceInfo}
       </Text>
 
       <View style={styles.infoCard}>
         <View style={styles.infoRow}>
-          <Text style={styles.infoLabel}>Gateway</Text>
+          <Text style={styles.infoLabel}>{t.gateway}</Text>
           <Text style={styles.infoValue}>{gatewayNombre}</Text>
         </View>
         <View style={styles.infoRow}>
-          <Text style={styles.infoLabel}>Tipo de dispositivo</Text>
-          <Text style={styles.infoValue}>{device ?? "N/D"}</Text>
+          <Text style={styles.infoLabel}>{t.deviceType}</Text>
+          <Text style={styles.infoValue}>{device ?? t.notAvailable}</Text>
         </View>
         <View style={styles.infoRow}>
-          <Text style={styles.infoLabel}>Protocolo</Text>
-          <Text style={styles.infoValue}>{protocolo ?? "N/D"}</Text>
+          <Text style={styles.infoLabel}>{t.protocol}</Text>
+          <Text style={styles.infoValue}>{protocolo ?? t.notAvailable}</Text>
         </View>
         <View style={styles.infoRow}>
-          <Text style={styles.infoLabel}>MAC</Text>
+          <Text style={styles.infoLabel}>{t.mac}</Text>
           <Text style={styles.infoValue}>{mac}</Text>
         </View>
         <View style={styles.infoRow}>
-          <Text style={styles.infoLabel}>Última fecha</Text>
+          <Text style={styles.infoLabel}>{t.lastDate}</Text>
           <Text style={styles.infoValue}>{fecha}</Text>
         </View>
         <View style={styles.infoRow}>
-          <Text style={styles.infoLabel}>Última hora</Text>
+          <Text style={styles.infoLabel}>{t.lastTime}</Text>
           <Text style={styles.infoValue}>{hora}</Text>
         </View>
       </View>
 
       <Text style={styles.sectionTitle}>
-        Calidad de lectura
+        {t.readingQuality}
       </Text>
 
       <View style={styles.infoCard}>
         <View style={styles.infoRow}>
-          <Text style={styles.infoLabel}>Intentos de lectura</Text>
-          <Text style={styles.infoValue}>{readAttempts ?? "N/D"}</Text>
+          <Text style={styles.infoLabel}>{t.readAttempts}</Text>
+          <Text style={styles.infoValue}>{readAttempts ?? t.notAvailable}</Text>
         </View>
         <View style={styles.infoRow}>
-          <Text style={styles.infoLabel}>% de lecturas buenas</Text>
+          <Text style={styles.infoLabel}>{t.goodReadsRatio}</Text>
           <Text style={styles.infoValue}>
-            {goodReadsRatio !== null ? `${goodReadsRatio}%` : "N/D"}
+            {goodReadsRatio !== null ? `${goodReadsRatio}%` : t.notAvailable}
           </Text>
         </View>
         {pulsos !== null && (
           <View style={styles.infoRow}>
-            <Text style={styles.infoLabel}>Pulsos (agua)</Text>
+            <Text style={styles.infoLabel}>{t.waterPulses}</Text>
             <Text style={styles.infoValue}>{pulsos}</Text>
           </View>
         )}
       </View>
 
       <Text style={styles.sectionTitle}>
-        Monitoreo
+        {t.monitoring}
       </Text>
 
       <View style={styles.monitorCard}>
         <Text style={styles.monitorTitle}>
-          Estado de comunicación
+          {t.communicationStatus}
         </Text>
         <Text style={styles.monitorText}>
           {estado === "Online"
-            ? "El medidor está reportando información correctamente."
-            : "El medidor no está reportando información actualmente."}
+            ? t.meterOnlineMsg
+            : t.meterOfflineMsgDetail}
         </Text>
       </View>
     </ScrollView>
