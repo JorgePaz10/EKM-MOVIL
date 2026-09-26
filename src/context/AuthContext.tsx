@@ -487,18 +487,33 @@ export const AuthProvider = ({
   // CERRAR SESIÓN
   // ========================================
 
-  const logout =
-    async (): Promise<void> => {
+const logout = async (): Promise<void> => {
+  try {
 
-    await supabase.auth.signOut();
+    const { error } =
+      await supabase.auth.signOut();
+
+    if (error) {
+      console.log(
+        "Error cerrando sesión en Supabase:",
+        error.message
+      );
+    }
 
     setUser(null);
 
-    console.log(
-      "Sesión cerrada."
-    );
-  };
+    console.log("Sesión cerrada.");
 
+  } catch (error) {
+
+    console.log(
+      "Error cerrando sesión:",
+      error
+    );
+
+    setUser(null);
+  }
+};
 
   // ========================================
   // PROVIDER

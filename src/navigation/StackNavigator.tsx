@@ -17,7 +17,7 @@ export type RootStackParamList = {
   UserTabs: undefined;
 
   ClientDetails: {
-    clientId: string;
+    clientName: string;
   };
 
   GatewayDetails: {
@@ -26,6 +26,18 @@ export type RootStackParamList = {
 
   MeterDetails: {
     meterId: string;
+    gatewayNombre: string;
+    nombre: string;
+    device?: string;
+    protocolo?: string;
+    mac: string;
+    estado: string;
+    lectura: number;
+    fecha: string;
+    hora: string;
+    goodReadsRatio?: number | null;
+    readAttempts?: string | null;
+    pulsos?: string | null;
   };
 
 };

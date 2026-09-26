@@ -13,60 +13,28 @@ export default function MeterDetails({ route }: any) {
   const { colors } = useTheme();
   const styles = crearEstilos(colors);
 
-  const { meterId } = route.params;
-
-  const medidores: any = {
-    "1": {
-      nombre: "Medidor 001",
-      gateway: "Gateway Sucursal Principal",
-      mac: "00:1A:2B:3C:4D:01",
-      estado: "Online",
-      lectura: "1250.45 kWh",
-      fecha: "03/09/2026",
-      hora: "19:45",
-    },
-    "2": {
-      nombre: "Medidor 002",
-      gateway: "Gateway Sucursal Principal",
-      mac: "00:1A:2B:3C:4D:02",
-      estado: "Online",
-      lectura: "980.20 kWh",
-      fecha: "03/09/2026",
-      hora: "19:45",
-    },
-    "3": {
-      nombre: "Medidor 003",
-      gateway: "Gateway Sucursal Principal",
-      mac: "00:1A:2B:3C:4D:03",
-      estado: "Offline",
-      lectura: "Sin lectura",
-      fecha: "03/09/2026",
-      hora: "18:20",
-    },
-    "4": {
-      nombre: "Medidor 004",
-      gateway: "Gateway Sucursal Principal",
-      mac: "00:1A:2B:3C:4D:04",
-      estado: "Sin actualización",
-      lectura: "1456.80 kWh",
-      fecha: "03/09/2026",
-      hora: "19:00",
-    },
-  };
-
-  const medidor = medidores[meterId];
+  const {
+    nombre,
+    gatewayNombre,
+    device,
+    protocolo,
+    mac,
+    estado,
+    lectura,
+    fecha,
+    hora,
+    goodReadsRatio,
+    readAttempts,
+    pulsos,
+  } = route.params;
 
   const meterStatus =
-    medidor.estado === "Online"
-      ? "online"
-      : medidor.estado === "Offline"
-        ? "offline"
-        : "warning";
+    estado === "Online" ? "online" : "offline";
 
   return (
     <ScrollView style={styles.container}>
       <Text style={styles.title}>
-        {medidor.nombre}
+        {nombre}
       </Text>
 
       <Text style={styles.subtitle}>
@@ -85,31 +53,62 @@ export default function MeterDetails({ route }: any) {
           Lectura actual
         </Text>
         <Text style={styles.reading}>
-          {medidor.lectura}
+          {lectura} kWh
         </Text>
       </View>
 
       <Text style={styles.sectionTitle}>
-        Información
+        Información del dispositivo
       </Text>
 
       <View style={styles.infoCard}>
         <View style={styles.infoRow}>
           <Text style={styles.infoLabel}>Gateway</Text>
-          <Text style={styles.infoValue}>{medidor.gateway}</Text>
+          <Text style={styles.infoValue}>{gatewayNombre}</Text>
+        </View>
+        <View style={styles.infoRow}>
+          <Text style={styles.infoLabel}>Tipo de dispositivo</Text>
+          <Text style={styles.infoValue}>{device ?? "N/D"}</Text>
+        </View>
+        <View style={styles.infoRow}>
+          <Text style={styles.infoLabel}>Protocolo</Text>
+          <Text style={styles.infoValue}>{protocolo ?? "N/D"}</Text>
         </View>
         <View style={styles.infoRow}>
           <Text style={styles.infoLabel}>MAC</Text>
-          <Text style={styles.infoValue}>{medidor.mac}</Text>
+          <Text style={styles.infoValue}>{mac}</Text>
         </View>
         <View style={styles.infoRow}>
           <Text style={styles.infoLabel}>Última fecha</Text>
-          <Text style={styles.infoValue}>{medidor.fecha}</Text>
+          <Text style={styles.infoValue}>{fecha}</Text>
         </View>
         <View style={styles.infoRow}>
           <Text style={styles.infoLabel}>Última hora</Text>
-          <Text style={styles.infoValue}>{medidor.hora}</Text>
+          <Text style={styles.infoValue}>{hora}</Text>
         </View>
+      </View>
+
+      <Text style={styles.sectionTitle}>
+        Calidad de lectura
+      </Text>
+
+      <View style={styles.infoCard}>
+        <View style={styles.infoRow}>
+          <Text style={styles.infoLabel}>Intentos de lectura</Text>
+          <Text style={styles.infoValue}>{readAttempts ?? "N/D"}</Text>
+        </View>
+        <View style={styles.infoRow}>
+          <Text style={styles.infoLabel}>% de lecturas buenas</Text>
+          <Text style={styles.infoValue}>
+            {goodReadsRatio !== null ? `${goodReadsRatio}%` : "N/D"}
+          </Text>
+        </View>
+        {pulsos !== null && (
+          <View style={styles.infoRow}>
+            <Text style={styles.infoLabel}>Pulsos (agua)</Text>
+            <Text style={styles.infoValue}>{pulsos}</Text>
+          </View>
+        )}
       </View>
 
       <Text style={styles.sectionTitle}>
@@ -121,11 +120,9 @@ export default function MeterDetails({ route }: any) {
           Estado de comunicación
         </Text>
         <Text style={styles.monitorText}>
-          {medidor.estado === "Online"
+          {estado === "Online"
             ? "El medidor está reportando información correctamente."
-            : medidor.estado === "Offline"
-              ? "El medidor no está reportando información actualmente."
-              : "El medidor tiene información, pero no se ha actualizado recientemente."}
+            : "El medidor no está reportando información actualmente."}
         </Text>
       </View>
     </ScrollView>

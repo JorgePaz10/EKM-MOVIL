@@ -1,60 +1,92 @@
-import React from "react";
-import {View,Text,StyleSheet,ScrollView,TouchableOpacity,} from "react-native";
+import React, { useCallback, useState } from "react";
+import {
+  View,
+  Text,
+  StyleSheet,
+  ScrollView,
+  TouchableOpacity,
+  ActivityIndicator,
+  RefreshControl,
+} from "react-native";
 
 import StatusBadge from "../components/StatusBadge";
 import { useTheme } from "../context/ThemeContext";
-
-type Alerta = {
-  id: string;
-  tipo: "offline" | "warning";
-  titulo: string;
-  mensaje: string;
-  cliente: string;
-  gateway: string;
-  meterId?: string;
-  gatewayId: string;
-};
+import { getResumenCompleto } from "../services/ekmService";
+import { useAutoRefresh } from "../hooks/useAutoRefresh";
 
 export default function Alerts({ navigation }: any) {
   const { colors } = useTheme();
   const styles = crearEstilos(colors);
 
-  const alertas: Alerta[] = [
-    {
-      id: "1",
-      tipo: "offline",
-      titulo: "Medidor offline",
-      mensaje: "El Medidor 003 no está reportando información.",
-      cliente: "Supermercados Del Corral",
-      gateway: "Gateway Sucursal Principal",
-      meterId: "3",
-      gatewayId: "1",
-    },
-    {
-      id: "2",
-      tipo: "warning",
-      titulo: "Sin actualización",
-      mensaje:
-        "El Medidor 002 no ha actualizado su lectura recientemente.",
-      cliente: "Empresa ABC",
-      gateway: "Gateway Sucursal Norte",
-      meterId: "2",
-      gatewayId: "2",
-    },
-    {
-      id: "3",
-      tipo: "offline",
-      titulo: "Gateway offline",
-      mensaje:
-        "El gateway de la Sucursal Sur no esta disponible.",
-      cliente: "Corporación XYZ",
-      gateway: "Gateway Sucursal Sur",
-      gatewayId: "3",
-    },
-  ];
+  const [loading, setLoading] = useState(true);
+  const [alertas, setAlertas] = useState<any[]>([]);
+
+  const cargarAlertas = useCallback(async () => {
+    try {
+      const gatewaysConMedidores = await getResumenCompleto();
+
+      const alertasGeneradas: any[] = [];
+
+      gatewaysConMedidores.forEach((gateway: any) => {
+        if (!gateway.activo || gateway.errorConexion) {
+          alertasGeneradas.push({
+            id: `gw-${gateway.id}`,
+            tipo: "offline",
+            titulo: "Gateway offline",
+            mensaje: `El gateway ${gateway.nombre} no está disponible.`,
+            cliente: gateway.cliente,
+            gateway: gateway.nombre,
+            gatewayId: gateway.id,
+          });
+        }
+
+        gateway.medidores.forEach((medidor: any) => {
+          if (medidor.estado !== "Online") {
+            alertasGeneradas.push({
+              id: `mt-${medidor.id}`,
+              tipo: "offline",
+              titulo: "Medidor offline",
+              mensaje: `El medidor ${medidor.nombre} no está reportando información.`,
+              cliente: gateway.cliente,
+              gateway: gateway.nombre,
+              gatewayId: gateway.id,
+              meterId: medidor.id,
+            });
+          }
+        });
+      });
+
+      setAlertas(alertasGeneradas);
+
+    } catch (error) {
+      console.log("Error cargando alertas:", error);
+    } finally {
+      setLoading(false);
+    }
+  }, []);
+
+  const { refreshing, onRefresh } = useAutoRefresh(cargarAlertas, 5 * 60 * 1000);
+
+  if (loading) {
+    return (
+      <View style={styles.loadingContainer}>
+        <ActivityIndicator size="large" color={colors.primary} />
+        <Text style={styles.loadingText}>Cargando alertas...</Text>
+      </View>
+    );
+  }
 
   return (
-    <ScrollView style={styles.container}>
+    <ScrollView
+      style={styles.container}
+      refreshControl={
+        <RefreshControl
+          refreshing={refreshing}
+          onRefresh={onRefresh}
+          tintColor={colors.primary}
+        />
+      }
+    >
       <Text style={styles.title}>Alertas</Text>
 
       <Text style={styles.subtitle}>
@@ -74,17 +106,11 @@ export default function Alerts({ navigation }: any) {
         <TouchableOpacity
           key={alerta.id}
           style={styles.alertCard}
-          onPress={() => {
-            if (alerta.meterId) {
-              navigation.navigate("MeterDetails", {
-                meterId: alerta.meterId,
-              });
-            } else {
-              navigation.navigate("GatewayDetails", {
-                gatewayId: alerta.gatewayId,
-              });
-            }
-          }}
+          onPress={() =>
+            navigation.navigate("GatewayDetails", {
+              gatewayId: alerta.gatewayId,
+            })
+          }
         >
           <View style={styles.alertHeader}>
             <Text style={styles.alertTitle}>
@@ -131,6 +157,18 @@ const crearEstilos = (colors: any) => StyleSheet.create({
     flex: 1,
     backgroundColor: colors.background,
     padding: 20,
+  },
+  loadingContainer: {
+    flex: 1,
+    backgroundColor: colors.background,
+    justifyContent: "center",
+    alignItems: "center",
+    padding: 20,
+  },
+  loadingText: {
+    marginTop: 12,
+    fontSize: 16,
+    color: colors.textSecondary,
   },
   title: {
     fontSize: 28,

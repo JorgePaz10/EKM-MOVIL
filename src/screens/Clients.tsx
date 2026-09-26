@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useCallback, useState } from "react";
 import {
   View,
   Text,
@@ -6,178 +6,168 @@ import {
   ScrollView,
   TouchableOpacity,
   ActivityIndicator,
+  RefreshControl,
 } from "react-native";
 
 import { useTheme } from "../context/ThemeContext";
-import { getGatewaysUsuario } from "../services/ekmService";
+import { getResumenCompleto } from "../services/ekmService";
+import { useAutoRefresh } from "../hooks/useAutoRefresh";
 
 export default function Clients({ navigation }: any) {
   const { colors } = useTheme();
   const styles = crearEstilos(colors);
 
-  const [clientes, setClientes] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
+  const [clientes, setClientes] = useState<any[]>([]);
 
-  useEffect(() => {
-    cargarClientes();
-  }, []);
-
-  const cargarClientes = async () => {
+  const cargarClientes = useCallback(async () => {
     try {
-      const gateways = await getGatewaysUsuario();
+      const gatewaysConMedidores = await getResumenCompleto();
 
-      // Agrupar gateways por cliente
-      const clientesAgrupados: any = {};
+      const agrupado: Record<string, any> = {};
 
-      gateways.forEach((gateway: any) => {
-        if (!clientesAgrupados[gateway.cliente]) {
-          clientesAgrupados[gateway.cliente] = {
-            id: gateway.cliente,
+      gatewaysConMedidores.forEach((gateway: any) => {
+        if (!agrupado[gateway.cliente]) {
+          agrupado[gateway.cliente] = {
             nombre: gateway.cliente,
             gateways: 0,
             medidores: 0,
           };
         }
-
-        clientesAgrupados[gateway.cliente].gateways += 1;
+        agrupado[gateway.cliente].gateways += 1;
+        agrupado[gateway.cliente].medidores += gateway.medidores.length;
       });
 
-      setClientes(Object.values(clientesAgrupados));
+      setClientes(Object.values(agrupado));
+
     } catch (error) {
       console.log("Error cargando clientes:", error);
     } finally {
       setLoading(false);
     }
-  };
+  }, []);
+
+  const { refreshing, onRefresh } = useAutoRefresh(cargarClientes, 5 * 60 * 1000);
+
+  if (loading) {
+    return (
+      <View style={styles.loadingContainer}>
+        <ActivityIndicator size="large" color={colors.primary} />
+        <Text style={styles.loadingText}>Cargando clientes...</Text>
+      </View>
+    );
+  }
 
   return (
-    <ScrollView style={styles.container}>
+    <ScrollView
+      style={styles.container}
+      refreshControl={
+        <RefreshControl
+          refreshing={refreshing}
+          onRefresh={onRefresh}
+          tintColor={colors.primary}
+        />
+      }
+    >
       <Text style={styles.title}>Clientes</Text>
 
       <Text style={styles.subtitle}>
         Empresas administradas en Jutaru Control
       </Text>
 
-      {loading ? (
-        <ActivityIndicator
-          size="large"
-          color={colors.primary}
-        />
-      ) : clientes.length === 0 ? (
-        <Text style={styles.emptyText}>
-          No hay clientes asignados a este usuario.
-        </Text>
-      ) : (
-        clientes.map((cliente) => (
-          <TouchableOpacity
-            key={cliente.id}
-            style={styles.card}
-            onPress={() =>
-              navigation.navigate("ClientDetails", {
-                clientId: cliente.id,
-              })
-            }
-          >
-            <Text style={styles.clientName}>
-              {cliente.nombre}
-            </Text>
+      {clientes.map((cliente) => (
+        <TouchableOpacity
+          key={cliente.nombre}
+          style={styles.card}
+          onPress={() =>
+            navigation.navigate("ClientDetails", {
+              clientName: cliente.nombre,
+            })
+          }
+        >
+          <Text style={styles.clientName}>{cliente.nombre}</Text>
 
-            <View style={styles.infoRow}>
-              <Text style={styles.infoLabel}>
-                Gateways
-              </Text>
+          <View style={styles.infoRow}>
+            <Text style={styles.infoLabel}>Gateways</Text>
+            <Text style={styles.infoValue}>{cliente.gateways}</Text>
+          </View>
 
-              <Text style={styles.infoValue}>
-                {cliente.gateways}
-              </Text>
-            </View>
+          <View style={styles.infoRow}>
+            <Text style={styles.infoLabel}>Medidores</Text>
+            <Text style={styles.infoValue}>{cliente.medidores}</Text>
+          </View>
 
-            <View style={styles.infoRow}>
-              <Text style={styles.infoLabel}>
-                Medidores
-              </Text>
-
-              <Text style={styles.infoValue}>
-                {cliente.medidores}
-              </Text>
-            </View>
-
-            <Text style={styles.detailsText}>
-              Ver detalles →
-            </Text>
-          </TouchableOpacity>
-        ))
-      )}
+          <Text style={styles.detailsText}>
+            Ver detalles →
+          </Text>
+        </TouchableOpacity>
+      ))}
     </ScrollView>
   );
 }
 
-const crearEstilos = (colors: any) =>
-  StyleSheet.create({
-    container: {
-      flex: 1,
-      backgroundColor: colors.background,
-      padding: 20,
-    },
-
-    title: {
-      fontSize: 28,
-      fontWeight: "bold",
-      color: colors.primary,
-      marginBottom: 5,
-    },
-
-    subtitle: {
-      fontSize: 15,
-      color: colors.textSecondary,
-      marginBottom: 20,
-    },
-
-    card: {
-      backgroundColor: colors.cardBackground,
-      borderWidth: 1,
-      borderColor: colors.cardBorder,
-      borderRadius: 10,
-      padding: 18,
-      marginBottom: 15,
-      elevation: 3,
-    },
-
-    clientName: {
-      fontSize: 18,
-      fontWeight: "bold",
-      color: colors.text,
-      marginBottom: 15,
-    },
-
-    infoRow: {
-      flexDirection: "row",
-      justifyContent: "space-between",
-      marginBottom: 8,
-    },
-
-    infoLabel: {
-      fontSize: 15,
-      color: colors.textSecondary,
-    },
-
-    infoValue: {
-      fontSize: 15,
-      fontWeight: "bold",
-      color: colors.primary,
-    },
-
-    detailsText: {
-      marginTop: 10,
-      fontSize: 14,
-      fontWeight: "bold",
-      color: colors.primary,
-    },
-
-    emptyText: {
-      textAlign: "center",
-      marginTop: 30,
-      color: colors.textSecondary,
-      fontSize: 16,
-    },
-  });
+const crearEstilos = (colors: any) => StyleSheet.create({
+  container: {
+    flex: 1,
+    backgroundColor: colors.background,
+    padding: 20,
+  },
+  loadingContainer: {
+    flex: 1,
+    backgroundColor: colors.background,
+    justifyContent: "center",
+    alignItems: "center",
+    padding: 20,
+  },
+  loadingText: {
+    marginTop: 12,
+    fontSize: 16,
+    color: colors.textSecondary,
+  },
+  title: {
+    fontSize: 28,
+    fontWeight: "bold",
+    color: colors.primary,
+    marginBottom: 5,
+  },
+  subtitle: {
+    fontSize: 15,
+    color: colors.textSecondary,
+    marginBottom: 20,
+  },
+  card: {
+    backgroundColor: colors.cardBackground,
+    borderWidth: 1,
+    borderColor: colors.cardBorder,
+    borderRadius: 10,
+    padding: 18,
+    marginBottom: 15,
+    elevation: 3,
+  },
+  clientName: {
+    fontSize: 18,
+    fontWeight: "bold",
+    color: colors.text,
+    marginBottom: 15,
+  },
+  infoRow: {
+    flexDirection: "row",
+    justifyContent: "space-between",
+    marginBottom: 8,
+  },
+  infoLabel: {
+    fontSize: 15,
+    color: colors.textSecondary,
+  },
+  infoValue: {
+    fontSize: 15,
+    fontWeight: "bold",
+    color: colors.primary,
+  },
+  detailsText: {
+    marginTop: 10,
+    fontSize: 14,
+    fontWeight: "bold",
+    color: colors.primary,
+  },
+});
