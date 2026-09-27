@@ -228,7 +228,7 @@ export const AuthProvider = ({
 
     const redirectUrl =
       AuthSession.makeRedirectUri({
-        scheme: "jutarucontrol",
+        scheme: "ekmjutaru",
         path: "auth/callback",
       });
 

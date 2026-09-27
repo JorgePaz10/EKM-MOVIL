@@ -1,21 +1,22 @@
 {
   "expo": {
-    "name": "Jutaru Control",
+    "name": "EKM Jutaru",
     "slug": "Jutaru-Control",
-    "scheme": "jutarucontrol",
+    "scheme": "ekmjutaru",
     "version": "1.0.0",
     "orientation": "portrait",
-    "icon": "./assets/icon.png",
+    "icon": "./assets/images/logojutraru.png",
     "userInterfaceStyle": "light",
     "ios": {
       "supportsTablet": true
     },
     "android": {
       "adaptiveIcon": {
-        "foregroundImage": "./assets/adaptive-icon.png",
+        "foregroundImage": "./assets/images/logojutraru.png",
         "backgroundColor": "#ffffff"
       },
-      "predictiveBackGestureEnabled": false
+      "predictiveBackGestureEnabled": false,
+      "package": "com.jorgepaz12.JutaruControl"
     },
     "web": {
       "favicon": "./assets/favicon.png"
@@ -24,6 +25,12 @@
       "expo-font",
       "expo-status-bar",
       "expo-web-browser"
-    ]
+    ],
+    "extra": {
+      "eas": {
+        "projectId": "0c176467-58aa-485a-bf9b-33e0639657a1"
+      }
+    },
+    "owner": "jorgepaz12"
   }
 }

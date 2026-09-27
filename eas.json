@@ -1,0 +1,32 @@
+{
+  "cli": {
+    "version": ">= 24.8.0",
+    "appVersionSource": "remote"
+  },
+  "build": {
+    "development": {
+      "developmentClient": true,
+      "distribution": "internal"
+    },
+    "preview": {
+      "distribution": "internal",
+      "android": {
+        "buildType": "apk"
+      },
+      "env": {
+        "EXPO_PUBLIC_SUPABASE_URL": "https://jtmueqlxzxoxjkckkeyi.supabase.co",
+        "EXPO_PUBLIC_SUPABASE_PUBLISHABLE_KEY": "sb_publishable_iPiDw-DNaN4iAd56MDTj3Q_OYf4zY4g"
+      }
+    },
+    "production": {
+      "autoIncrement": true,
+      "env": {
+        "EXPO_PUBLIC_SUPABASE_URL": "https://jtmueqlxzxoxjkckkeyi.supabase.co",
+        "EXPO_PUBLIC_SUPABASE_PUBLISHABLE_KEY": "sb_publishable_iPiDw-DNaN4iAd56MDTj3Q_OYf4zY4g"
+      }
+    }
+  },
+  "submit": {
+    "production": {}
+  }
+}
