@@ -2,6 +2,10 @@ import React from "react";
 import {
   createNativeStackNavigator,
 } from "@react-navigation/native-stack";
+import {
+  View,
+  ActivityIndicator,
+} from "react-native";
 
 import Login from "../screens/Login";
 import ClientDetails from "../screens/ClientDetails";
@@ -9,6 +13,7 @@ import GatewayDetails from "../screens/GatewayDetails";
 import MeterDetails from "../screens/MeterDetails";
 import TabsNavigator from "./TabsNavigator";
 import { useTheme } from "../context/ThemeContext";
+import { useAuth } from "../context/AuthContext";
 
 
 export type RootStackParamList = {
@@ -51,11 +56,32 @@ const Stack =
 export default function StackNavigator() {
 
   const { colors } = useTheme();
+  const { user, loading } = useAuth();
+
+
+  if (loading) {
+    return (
+      <View
+        style={{
+          flex: 1,
+          alignItems: "center",
+          justifyContent: "center",
+          backgroundColor: colors.background,
+        }}
+      >
+        <ActivityIndicator
+          size="large"
+          color={colors.primary}
+        />
+      </View>
+    );
+  }
+
 
   return (
 
     <Stack.Navigator
-      initialRouteName="LoginScreen"
+      initialRouteName={user ? "UserTabs" : "LoginScreen"}
       screenOptions={{
         headerStyle: {
           backgroundColor: colors.cardBackground,

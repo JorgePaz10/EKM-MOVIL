@@ -2,6 +2,7 @@ import React, {
   createContext,
   useContext,
   useState,
+  useEffect,
 } from "react";
 
 import * as WebBrowser from "expo-web-browser";
@@ -31,6 +32,7 @@ type User = {
 
 type AuthContextType = {
   user: User;
+  loading: boolean;
 
   logout: () => Promise<void>;
 
@@ -64,6 +66,109 @@ export const AuthProvider = ({
   const [user, setUser] =
     useState<User>(null);
 
+  const [loading, setLoading] =
+    useState<boolean>(true);
+
+
+  // ========================================
+  // BUSCAR PERFIL EN LA TABLA usuarios
+  // ========================================
+
+  const cargarPerfil = async (
+    email: string,
+    accessToken?: string,
+    refreshToken?: string
+  ): Promise<boolean> => {
+
+    const {
+      data: usuario,
+      error: usuarioError,
+    } =
+      await supabase
+        .from("usuarios")
+        .select("nombre, rol, autorizado")
+        .eq("email", email)
+        .single();
+
+    if (usuarioError || !usuario) {
+      console.log("Usuario no registrado.");
+      await supabase.auth.signOut();
+      setUser(null);
+      return false;
+    }
+
+    if (usuario.autorizado !== true) {
+      console.log("Usuario no autorizado.");
+      await supabase.auth.signOut();
+      setUser(null);
+      return false;
+    }
+
+    setUser({
+      email: email,
+      nombre: usuario.nombre,
+      authToken: accessToken,
+      sesionToken: refreshToken,
+      role: usuario.rol,
+    });
+
+    return true;
+  };
+
+
+  // ========================================
+  // VERIFICAR SESIÓN GUARDADA AL ABRIR LA APP
+  // ========================================
+
+  useEffect(() => {
+
+    const restaurarSesion = async () => {
+
+      const {
+        data: { session },
+        error,
+      } = await supabase.auth.getSession();
+
+      if (error) {
+        console.log("Error obteniendo sesión guardada:", error.message);
+      }
+
+      if (session?.user?.email) {
+
+        console.log("Sesión encontrada para:", session.user.email);
+
+        await cargarPerfil(
+          session.user.email,
+          session.access_token,
+          session.refresh_token
+        );
+
+      } else {
+        console.log("No había sesión guardada.");
+      }
+
+      setLoading(false);
+    };
+
+    restaurarSesion();
+
+
+    const { data: listener } =
+      supabase.auth.onAuthStateChange((event, session) => {
+
+        console.log("Auth state change:", event);
+
+        if (event === "SIGNED_OUT" || !session) {
+          setUser(null);
+        }
+      });
+
+    return () => {
+      listener.subscription.unsubscribe();
+    };
+
+  }, []);
+
 
   // ========================================
   // LOGIN NORMAL
@@ -83,139 +188,23 @@ export const AuthProvider = ({
         password: password,
       });
 
-
-    // Credenciales incorrectas
-    if (
-      error ||
-      !data.user
-    ) {
-
-      console.log(
-        "Error de login:",
-        error?.message
-      );
-
+    if (error || !data.user) {
+      console.log("Error de login:", error?.message);
       return false;
     }
 
-
-    const userEmail =
-      data.user.email;
-
+    const userEmail = data.user.email;
 
     if (!userEmail) {
-
       await supabase.auth.signOut();
-
       return false;
     }
 
-
-    console.log(
-      "CORREO LOGIN:",
-      userEmail
+    return await cargarPerfil(
+      userEmail,
+      data.session?.access_token,
+      data.session?.refresh_token
     );
-
-
-    // Buscar usuario en la tabla usuarios
-    const {
-      data: usuario,
-      error: usuarioError,
-    } =
-      await supabase
-        .from("usuarios")
-        .select(
-          "nombre, rol, autorizado"
-        )
-        .eq(
-          "email",
-          userEmail
-        )
-        .single();
-
-
-    console.log(
-      "USUARIO BD:",
-      usuario
-    );
-
-    console.log(
-      "ERROR BD:",
-      usuarioError
-    );
-
-
-    // Usuario no registrado
-    if (
-      usuarioError ||
-      !usuario
-    ) {
-
-      console.log(
-        "Usuario no registrado."
-      );
-
-      await supabase.auth.signOut();
-
-      return false;
-    }
-
-
-    // Usuario no autorizado
-    if (
-      usuario.autorizado !== true
-    ) {
-
-      console.log(
-        "Usuario no autorizado."
-      );
-
-      await supabase.auth.signOut();
-
-      return false;
-    }
-
-
-    // Guardar usuario
-    setUser({
-
-      email: userEmail,
-
-      nombre:
-        usuario.nombre,
-
-      authToken:
-        data.session?.access_token,
-
-      sesionToken:
-        data.session?.refresh_token,
-
-      role:
-        usuario.rol,
-    });
-
-
-    console.log(
-      "Login autorizado:"
-    );
-
-    console.log(
-      "Correo:",
-      userEmail
-    );
-
-    console.log(
-      "Nombre:",
-      usuario.nombre
-    );
-
-    console.log(
-      "Rol:",
-      usuario.rol
-    );
-
-
-    return true;
   };
 
 
@@ -232,254 +221,69 @@ export const AuthProvider = ({
         path: "auth/callback",
       });
 
+    console.log("REDIRECT URL:", redirectUrl);
 
-    console.log(
-      "REDIRECT URL:",
-      redirectUrl
-    );
-
-
-    // Iniciar OAuth
     const {
       data,
       error,
     } =
       await supabase.auth.signInWithOAuth({
         provider: "google",
-
         options: {
-
-          redirectTo:
-            redirectUrl,
-
-          skipBrowserRedirect:
-            true,
+          redirectTo: redirectUrl,
+          skipBrowserRedirect: true,
         },
       });
 
-
-    if (
-      error ||
-      !data?.url
-    ) {
-
-      console.log(
-        "Error iniciando OAuth:",
-        error?.message
-      );
-
+    if (error || !data?.url) {
+      console.log("Error iniciando OAuth:", error?.message);
       return false;
     }
 
-
-    // Abrir Google
     const result =
       await WebBrowser.openAuthSessionAsync(
         data.url,
         redirectUrl
       );
 
-
-    if (
-      result.type !== "success" ||
-      !result.url
-    ) {
-
-      console.log(
-        "Login Google cancelado."
-      );
-
+    if (result.type !== "success" || !result.url) {
+      console.log("Login Google cancelado.");
       return false;
     }
 
+    const url = new URL(result.url.replace("#", "?"));
 
-    // Obtener respuesta
-    const url =
-      new URL(
-        result.url.replace(
-          "#",
-          "?"
-        )
-      );
+    const access_token = url.searchParams.get("access_token");
+    const refresh_token = url.searchParams.get("refresh_token");
 
-
-    const access_token =
-      url.searchParams.get(
-        "access_token"
-      );
-
-    const refresh_token =
-      url.searchParams.get(
-        "refresh_token"
-      );
-
-
-    if (
-      !access_token ||
-      !refresh_token
-    ) {
-
-      console.log(
-        "No se recibieron tokens."
-      );
-
+    if (!access_token || !refresh_token) {
+      console.log("No se recibieron tokens.");
       return false;
     }
 
-
-    // Crear sesión
     const {
       data: sessionData,
       error: sessionError,
     } =
       await supabase.auth.setSession({
-        access_token:
-          access_token,
-
-        refresh_token:
-          refresh_token,
+        access_token,
+        refresh_token,
       });
 
-
-    if (
-      sessionError ||
-      !sessionData.user?.email
-    ) {
-
-      console.log(
-        "Error estableciendo sesión:",
-        sessionError?.message
-      );
-
+    if (sessionError || !sessionData.user?.email) {
+      console.log("Error estableciendo sesión:", sessionError?.message);
       return false;
     }
 
+    const userEmail = sessionData.user.email;
 
-    // Correo obtenido de Google
-    const userEmail =
-      sessionData.user.email;
+    console.log("CORREO GOOGLE:", userEmail);
 
-
-    console.log(
-      "CORREO GOOGLE:",
-      userEmail
+    return await cargarPerfil(
+      userEmail,
+      sessionData.session?.access_token,
+      sessionData.session?.refresh_token
     );
-
-
-    // ======================================
-    // BUSCAR EN usuarios
-    // ======================================
-
-    const {
-      data: usuario,
-      error: usuarioError,
-    } =
-      await supabase
-        .from("usuarios")
-        .select(
-          "nombre, rol, autorizado"
-        )
-        .eq(
-          "email",
-          userEmail
-        )
-        .single();
-
-
-    console.log(
-      "USUARIO GOOGLE EN BD:",
-      usuario
-    );
-
-    console.log(
-      "ERROR GOOGLE BD:",
-      usuarioError
-    );
-
-
-    // No existe en el sistema
-    if (
-      usuarioError ||
-      !usuario
-    ) {
-
-      console.log(
-        "Correo Google no registrado en Jutaru Control."
-      );
-
-      await supabase.auth.signOut();
-
-      setUser(null);
-
-      return false;
-    }
-
-
-    // Existe pero no está autorizado
-    if (
-      usuario.autorizado !== true
-    ) {
-
-      console.log(
-        "Correo Google registrado pero no autorizado."
-      );
-
-      await supabase.auth.signOut();
-
-      setUser(null);
-
-      return false;
-    }
-
-
-    // ======================================
-    // USUARIO GOOGLE AUTORIZADO
-    // ======================================
-
-    setUser({
-
-      email:
-        userEmail,
-
-      nombre:
-        usuario.nombre,
-
-      authToken:
-        sessionData
-          .session
-          ?.access_token,
-
-      sesionToken:
-        sessionData
-          .session
-          ?.refresh_token,
-
-      role:
-        usuario.rol,
-    });
-
-
-    console.log(
-      "Google Login autorizado."
-    );
-
-    console.log(
-      "Correo:",
-      userEmail
-    );
-
-    console.log(
-      "Nombre:",
-      usuario.nombre
-    );
-
-    console.log(
-      "Rol:",
-      usuario.rol
-    );
-
-
-    return true;
   };
 
 
@@ -487,33 +291,25 @@ export const AuthProvider = ({
   // CERRAR SESIÓN
   // ========================================
 
-const logout = async (): Promise<void> => {
-  try {
+  const logout = async (): Promise<void> => {
+    try {
 
-    const { error } =
-      await supabase.auth.signOut();
+      const { error } = await supabase.auth.signOut();
 
-    if (error) {
-      console.log(
-        "Error cerrando sesión en Supabase:",
-        error.message
-      );
+      if (error) {
+        console.log("Error cerrando sesión en Supabase:", error.message);
+      }
+
+      setUser(null);
+
+      console.log("Sesión cerrada.");
+
+    } catch (error) {
+      console.log("Error cerrando sesión:", error);
+      setUser(null);
     }
+  };
 
-    setUser(null);
-
-    console.log("Sesión cerrada.");
-
-  } catch (error) {
-
-    console.log(
-      "Error cerrando sesión:",
-      error
-    );
-
-    setUser(null);
-  }
-};
 
   // ========================================
   // PROVIDER
@@ -523,6 +319,7 @@ const logout = async (): Promise<void> => {
     <AuthContext.Provider
       value={{
         user,
+        loading,
         login,
         logout,
         loginWithGoogle,
@@ -540,17 +337,13 @@ const logout = async (): Promise<void> => {
 
 export const useAuth = () => {
 
-  const context =
-    useContext(AuthContext);
-
+  const context = useContext(AuthContext);
 
   if (!context) {
-
     throw new Error(
       "useAuth debe ser utilizado dentro de AuthProvider"
     );
   }
-
 
   return context;
 };
